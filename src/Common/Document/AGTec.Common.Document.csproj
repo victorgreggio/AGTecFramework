@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>AGTec.Common.Document</Title>
+        <Authors>Victor Gregegio</Authors>
+        <RepositoryUrl>https://github.com/vgreggio/AGTecFramework</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AGTec.Common.Domain" Version="1.0.0"/>
+    </ItemGroup>
+
+</Project>

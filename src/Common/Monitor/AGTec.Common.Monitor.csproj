@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>AGTec.Common.Monitor</Title>
+        <Authors>Victor Gregegio</Authors>
+        <RepositoryUrl>https://github.com/vgreggio/AGTecFramework</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AGTec.Common.BackgroundTaskQueue" Version="1.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.11" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+        <PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
+        <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.3.8" />
+    </ItemGroup>
+
+</Project>
