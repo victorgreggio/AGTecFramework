@@ -1,6 +1,7 @@
 param(
     [ValidateSet("Release", "Debug")]$configuration = "Release",
-    [string]$nugetRepo = "LocalNugetRepo"
+    [string]$nugetRepo = "LocalNugetRepo",
+    [string]$nugetRepoApiKey = "P@ssw0rd"
 )
 
 function BuildAndPublish {
@@ -9,7 +10,8 @@ function BuildAndPublish {
         [string]$projectVersion,
         [string]$projectPath,
         [string]$configuration,
-        [string]$nugetRepo
+        [string]$nugetRepo,
+        [string]$nugetRepoApiKey
     )
 
     Write-Host "Building $projectName"
@@ -18,7 +20,7 @@ function BuildAndPublish {
 
     Write-Host "Publishing $projectName"
     $packageFile = [IO.Path]::Combine($projectPath, "bin", $configuration, $projectName + "." + $projectVersion + ".nupkg")
-    dotnet nuget push $packageFile --source $nugetRepo
+    dotnet nuget push $packageFile --source $nugetRepo --api-key $nugetRepoApiKey
 }
 
 function GetProjectVersion {
@@ -29,7 +31,8 @@ function GetProjectVersion {
 
     $projectFile = [IO.Path]::Combine($projectPath, $projectName + ".csproj")
     $projectVersion = [xml](Get-Content $projectFile).Project.PropertyGroup.Version
-    return $projectVersion
+    $result = If ($nul -eq $projectVersion) { "1.0.0" } Else { $projectVersion }
+    return $result
 }
 
 
@@ -116,5 +119,5 @@ foreach ($project in $projects) {
     $projectName = $project.Name
     $projectPath = [IO.Path]::Combine($PWD, $project.Path)
     $projectVersion = GetProjectVersion -projectPath $projectPath -projectName $projectName
-    BuildAndPublish -projectName $projectName -projectVersion $projectVersion -projectPath $projectPath -configuration $configuration -nugetRepo $nugetRepo
+    BuildAndPublish -projectName $projectName -projectVersion $projectVersion -projectPath $projectPath -configuration $configuration -nugetRepo $nugetRepo -nugetRepoApiKey $nugetRepoApiKey
 }
