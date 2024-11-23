@@ -10,10 +10,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="AGTec.Common.BackgroundTaskQueue" Version="1.0.0"/>
-        <PackageReference Include="AGTec.Common.Base" Version="1.0.0"/>
-        <PackageReference Include="AGTec.Common.Monitor" Version="1.0.0"/>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="AGTec.Common.BackgroundTaskQueue" Version="1.0.0" />
+        <PackageReference Include="AGTec.Common.Base" Version="1.0.0" />
+        <PackageReference Include="AGTec.Common.Monitor" Version="1.0.0" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
         <PackageReference Include="Correlate.AspNetCore" Version="5.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
@@ -23,7 +23,6 @@
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.11" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
-        <PackageReference Include="Serilog.Sinks.ElasticSearch" Version="10.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
     </ItemGroup>
 
