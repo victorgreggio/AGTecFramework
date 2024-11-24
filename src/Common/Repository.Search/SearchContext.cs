@@ -13,7 +13,6 @@ public class SearchContext : ISearchContext
         var pool = new StaticNodePool(configuration.Hosts.Select(host => new Uri(host)));
         var settings = new ElasticsearchClientSettings(pool)
             .EnableDebugMode()
-            .CertificateFingerprint(configuration.CertificateFingerprint)
             .Authentication(new BasicAuthentication(configuration.Username, configuration.Password));
 
         Client = new ElasticsearchClient(settings);
