@@ -7,6 +7,8 @@ namespace AGTec.Common.CQRS.Messaging.ActiveMQ;
 
 public static class ServiceCollectionExtensions
 {
+    public const string ActiveMQConnectionStringName = "ActiveMQ";
+    
     public static IServiceCollection AddCQRSWithMessaging(this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -30,12 +32,19 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddActiveMQMessaging(this IServiceCollection services,
         IConfiguration configuration)
     {
-        var activeMQMessageBusConfiguration = configuration
-            .GetSection(ActiveMQMessageBusConfiguration.ConfigSectionName).Get<ActiveMQMessageBusConfiguration>();
+        var activeMQConnectionString = configuration.GetConnectionString(ActiveMQConnectionStringName);
+
+        if (string.IsNullOrEmpty(activeMQConnectionString))
+            throw new Exception(
+                $"Connection string '{ActiveMQConnectionStringName}' not found.");
+
+        var activeMQMessageBusConfiguration = new ActiveMQMessageBusConfiguration
+        {
+            ConnectionString = activeMQConnectionString
+        };
 
         if (activeMQMessageBusConfiguration.IsValid() == false)
-            throw new Exception(
-                $"Configuration section '{ActiveMQMessageBusConfiguration.ConfigSectionName}' not found.");
+            throw new Exception($"Invalid ActiveMQ configuration.");
 
         services.AddSingleton<IMessageBusConfiguration>(activeMQMessageBusConfiguration);
         services.AddTransient<IActiveMQMessageFilterFactory, ActiveMQMessageFilterFactory>();
