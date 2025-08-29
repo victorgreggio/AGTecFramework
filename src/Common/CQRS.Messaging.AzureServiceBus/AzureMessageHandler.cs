@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AGTec.Common.Base.Extensions;
-using AGTec.Common.CQRS.Exceptions;
-using Microsoft.Azure.ServiceBus;
-using Microsoft.Azure.ServiceBus.Core;
+﻿using AGTec.Common.CQRS.Exceptions;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AGTec.Common.CQRS.Messaging.AzureServiceBus;
 
@@ -18,7 +17,7 @@ public class AzureMessageHandler : IMessageHandler
     private readonly IMessageSerializer _serializer;
     private readonly IServiceProvider _serviceProvider;
 
-    private IReceiverClient _receiverClient;
+    private ServiceBusProcessor _processor;
 
     public AzureMessageHandler(IServiceProvider serviceProvider,
         IMessageBusConfiguration configuration,
@@ -33,58 +32,64 @@ public class AzureMessageHandler : IMessageHandler
         _logger = logger;
     }
 
-    public void Handle(string destName, PublishType type, string subscriptionName = null,
+    public async Task Handle(string destName, PublishType type, string subscriptionName = null,
         IEnumerable<IMessageFilter> filters = null)
     {
-        _receiverClient = type == PublishType.Queue
-            ? new QueueClient(_configuration.ConnectionString, destName)
-            : new SubscriptionClient(_configuration.ConnectionString, destName, subscriptionName);
+        var client = new ServiceBusClient(_configuration.ConnectionString);
+
+        _processor = type == PublishType.Queue
+            ? client.CreateProcessor(destName, new ServiceBusProcessorOptions())
+            : client.CreateProcessor(destName, subscriptionName, new ServiceBusProcessorOptions());
 
         if (type == PublishType.Topic)
         {
-            var subscriptionClient = _receiverClient as ISubscriptionClient;
-            var existingFilters = subscriptionClient.GetRulesAsync().Result;
+            var adminClient = new ServiceBusAdministrationClient(_configuration.ConnectionString);
 
-            existingFilters?.ForEach(filter => subscriptionClient.RemoveRuleAsync(filter.Name).Wait());
-
-            filters?.ForEach(filter =>
+            var existingRules = adminClient.GetRulesAsync(destName, subscriptionName);
+            await foreach (var rule in existingRules)
             {
-                if (filter.IsValid())
-                    subscriptionClient.AddRuleAsync(_filterFactory.Create(filter)).Wait();
-            });
+                await adminClient.DeleteRuleAsync(destName, subscriptionName, rule.Name);
+            }
+
+            if (filters != null)
+            {
+                foreach (var filter in filters)
+                {
+                    if (filter.IsValid())
+                    {
+                        var ruleOptions = _filterFactory.Create(filter);
+                        await adminClient.CreateRuleAsync(destName, subscriptionName, ruleOptions);
+                    }
+                }
+            }
         }
 
-        _receiverClient.RegisterMessageHandler(
-            (message, cancellationToken) =>
+        _processor.ProcessMessageAsync += async args =>
+        {
+            if (!args.Message.ContentType.Equals(_serializer.ContentType))
+                throw new SerializerContentTypeMismatch();
+
+            _logger.LogInformation($"Processing message {args.Message.MessageId}.");
+
+            var messageBody = _serializer.Deserialize(args.Message.Body.ToArray());
+
+            using (var scope = _serviceProvider.CreateScope())
             {
-                if (message.ContentType.Equals(_serializer.ContentType) == false)
-                    throw new SerializerContentTypeMismatch();
+                var processor = scope.ServiceProvider.GetService<IMessageProcessor>();
+                await processor.Process(messageBody);
+            }
 
-                _logger.LogInformation($"Processing message {message.MessageId}.");
+            await args.CompleteMessageAsync(args.Message);
+        };
 
-                var messageBody = _serializer.Deserialize(message.Body);
+        _processor.ProcessErrorAsync += args =>
+        {
+            var errorMessage =
+                $"Error processing messages from {destName}/{subscriptionName}. ErrorSource: {args.ErrorSource}, EntityPath: {args.EntityPath}, Exception: {args.Exception}";
+            _logger.LogError(args.Exception, errorMessage);
+            throw new ErrorHandlingMessageException(errorMessage, args.Exception);
+        };
 
-                // Needs its own DI Scope
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var processor = scope.ServiceProvider.GetService<IMessageProcessor>();
-                    processor.Process(messageBody).Wait(cancellationToken);
-                }
-
-                return Task.CompletedTask;
-            },
-            exceptionEvent =>
-            {
-                var exceptionReceivedContext = $"Action: {exceptionEvent.ExceptionReceivedContext.Action} -" +
-                                               $"ClientId: {exceptionEvent.ExceptionReceivedContext.ClientId} -" +
-                                               $"Endpoint: {exceptionEvent.ExceptionReceivedContext.Endpoint} -" +
-                                               $"EntityPath: {exceptionEvent.ExceptionReceivedContext.EntityPath}.";
-
-                var errorMessage =
-                    $"Error processing messages from {destName}/{subscriptionName}. {exceptionReceivedContext}";
-
-                _logger.LogError(exceptionEvent.Exception, errorMessage);
-                throw new ErrorHandlingMessageException(errorMessage, exceptionEvent.Exception);
-            });
+        await _processor.StartProcessingAsync();
     }
 }

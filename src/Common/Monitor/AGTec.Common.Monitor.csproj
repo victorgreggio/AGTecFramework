@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>AGTec.Common.Monitor</Title>
         <Authors>Victor Gregegio</Authors>
@@ -11,11 +11,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AGTec.Common.BackgroundTaskQueue" Version="1.0.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
-        <PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
-        <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.3.8" />
+        <PackageReference Include="AGTec.Common.BackgroundTaskQueue" Version="1.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.8" />
+        <PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
+        <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.5.4" />
     </ItemGroup>
 
 </Project>

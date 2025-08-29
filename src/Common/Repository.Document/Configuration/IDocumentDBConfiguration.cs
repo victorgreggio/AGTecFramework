@@ -2,6 +2,5 @@
 
 public interface IDocumentDBConfiguration
 {
-    string ConnectionString { get; }
-    string Database { get; }
+    string DatabaseName { get; }
 }

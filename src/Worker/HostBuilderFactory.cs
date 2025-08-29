@@ -1,7 +1,11 @@
-﻿using System.IO;
+﻿using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Serilog;
+using System.IO;
 
 namespace AGTec.Worker;
 
@@ -25,14 +29,26 @@ public static class HostBuilderFactory
                     true)
                     .AddEnvironmentVariables("AGTEC_");
             })
-            .UseSerilog((context, config) =>
+            .UseSerilog((context, config) => config.MinimumLevel.Debug().Enrich.FromLogContext().WriteTo.Console())
+            .ConfigureServices((hostContext, services) =>
             {
-                config.MinimumLevel
-                    .Debug()
-                    .Enrich
-                    .FromLogContext()
-                    .WriteTo
-                    .Console();
+                // Service Discovery
+                services.AddServiceDiscovery();
+
+                // Http Resilience
+                services.ConfigureHttpClientDefaults(http =>
+                {
+                    http.AddStandardResilienceHandler();
+                    http.AddServiceDiscovery();
+                });
+
+                // OpenTelemetry
+                services.AddOpenTelemetry()
+                    .WithLogging(logging => logging.AddAzureMonitorLogExporter())
+                    .WithMetrics(metrics => metrics.AddHttpClientInstrumentation().AddRuntimeInstrumentation())
+                    .WithTracing(tracing => tracing.AddHttpClientInstrumentation())
+                    .UseAzureMonitorExporter();
+
             })
             .UseConsoleLifetime();
     }

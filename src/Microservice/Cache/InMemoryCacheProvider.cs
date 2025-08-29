@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Text.Json;
 using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json;
 
 namespace AGTec.Microservice.Cache;
 
@@ -19,7 +19,7 @@ public class InMemoryCacheProvider : ICacheProvider
         {
             var content = cachedObject as string;
             if (string.IsNullOrWhiteSpace(content) == false)
-                return JsonConvert.DeserializeObject<T>(content);
+                return JsonSerializer.Deserialize<T>(content);
         }
 
         return default;
@@ -32,7 +32,7 @@ public class InMemoryCacheProvider : ICacheProvider
 
     public void Set(string key, object value, TimeSpan expirationTimeSpan)
     {
-        var content = JsonConvert.SerializeObject(value);
+        var content = JsonSerializer.Serialize(value);
         if (string.IsNullOrWhiteSpace(content) == false)
             _memoryCache.Set(key, content,
                 new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = expirationTimeSpan });

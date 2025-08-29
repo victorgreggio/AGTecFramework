@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using AGTec.Common.BackgroundTaskQueue;
 using AGTec.Common.Monitor;
 using AGTec.Microservice.Auth.Configuration;
@@ -9,27 +5,25 @@ using AGTec.Microservice.Auth.Handlers;
 using AGTec.Microservice.Auth.Providers;
 using AGTec.Microservice.Cache;
 using AGTec.Microservice.Filters;
-using AGTec.Microservice.Swagger;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Correlate.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Polly;
-using Polly.Extensions.Http;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AGTec.Microservice;
 
 public static class ServiceCollectionExtensions
 {
-    private const string Retry = "DefaultRetryPolicy";
-    private const string Tiemout = "DefaultTimeoutPolicy";
-
     public static IServiceCollection AddAGTecMicroservice(this IServiceCollection services,
         IConfiguration configuration, IHostEnvironment hostEnv)
     {
@@ -53,6 +47,23 @@ public static class ServiceCollectionExtensions
         services.AddMemoryCache();
         services.AddTransient<ICacheProvider, InMemoryCacheProvider>();
 
+        // Service Discovery
+        services.AddServiceDiscovery();
+
+        // Http Resilience
+        services.ConfigureHttpClientDefaults(http =>
+        {
+            http.AddStandardResilienceHandler();
+            http.AddServiceDiscovery();
+        });
+
+        // OpenTelemetry
+        services.AddOpenTelemetry()
+            .WithLogging(logging => logging.AddAzureMonitorLogExporter())
+            .WithMetrics(metrics => metrics.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddRuntimeInstrumentation())
+            .WithTracing(tracing => tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation())
+        .UseAzureMonitor();
+
         // CORS
         var allowedOrigins = configuration.GetChildren().Any(child => child.Key == "AllowedOrigins")
             ? configuration.GetSection("AllowedOrigins").Get<string[]>()
@@ -65,39 +76,6 @@ public static class ServiceCollectionExtensions
                 .WithOrigins(allowedOrigins)
                 .AllowCredentials())
         );
-
-        // API Versioning
-        services.AddApiVersioning(setup =>
-        {
-            setup.DefaultApiVersion = new ApiVersion(1, 0);
-            setup.AssumeDefaultVersionWhenUnspecified = true;
-            setup.ReportApiVersions = true;
-        });
-
-        // API Doc
-        services.AddVersionedApiExplorer(
-            options =>
-            {
-                options.GroupNameFormat = "'v'VVV";
-                options.SubstituteApiVersionInUrl = true;
-            });
-
-        services.AddSwaggerGen(
-            options =>
-            {
-                var provider = services.BuildServiceProvider()
-                    .GetRequiredService<IApiVersionDescriptionProvider>();
-
-                foreach (var description in provider.ApiVersionDescriptions)
-                    options.SwaggerDoc(
-                        description.GroupName,
-                        new OpenApiInfo
-                        {
-                            Title = $"{description.ApiVersion}",
-                            Version = description.ApiVersion.ToString()
-                        });
-                options.OperationFilter<SwaggerDefaultValues>();
-            });
 
         // Monitor
         services.AddAGTecMonitor(hostEnv);
@@ -112,10 +90,8 @@ public static class ServiceCollectionExtensions
         // Authentication / Authorization
         services.AddAuth(configuration);
 
-        // HTTPClient Policies
-        services.AddHttpClientPolicies();
-
         // Queued Tasks
+        services.AddHostedService<QueuedHostedService>();
         services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
         // Controllers with Action Filters
@@ -123,11 +99,7 @@ public static class ServiceCollectionExtensions
         {
             opts.Filters.Add<InvalidModelStateFilter>();
             opts.Filters.Add<CorrelationIdFilter>();
-        }).AddNewtonsoftJson();
-
-        // Application Insights
-        if (configuration.GetChildren().Any(child => child.Key.Equals("ApplicationInsights")))
-            services.AddApplicationInsightsTelemetry(configuration);
+        });
 
         return services;
     }
@@ -174,24 +146,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAuthorizationHandler, ClaimOrScopeAuthorizationHandler>();
         services.AddSingleton<IAuthorizationHandler, ClaimAuthorizationHandler>();
         services.AddSingleton<IAuthorizationHandler, ClaimValueAuthorizationHandler>();
-
-        return services;
-    }
-
-    private static IServiceCollection AddHttpClientPolicies(this IServiceCollection services)
-    {
-        var registry = services.AddPolicyRegistry();
-        var retry = HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(new[]
-        {
-            TimeSpan.FromSeconds(1),
-            TimeSpan.FromSeconds(5),
-            TimeSpan.FromSeconds(10)
-        });
-
-        var timeout = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(10));
-
-        registry.Add(Retry, retry);
-        registry.Add(Tiemout, timeout);
 
         return services;
     }

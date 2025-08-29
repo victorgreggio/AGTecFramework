@@ -2,7 +2,6 @@ using AGTec.Common.Monitor;
 using AGTec.Microservice.Database;
 using Correlate.AspNetCore;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -45,16 +44,6 @@ public static class ApplicationBuilderExtensions
         app.UseHealthChecks("/health");
 
         app.UseAGTecMonitor(hostEnv);
-
-        // Adds Swagger API Doc
-        var provider = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
-        app.UseSwagger().UseSwaggerUI(options =>
-        {
-            foreach (var description in provider.ApiVersionDescriptions)
-                options.SwaggerEndpoint(
-                    $"/swagger/{description.GroupName}/swagger.json",
-                    description.GroupName.ToUpperInvariant());
-        });
 
         app.UseCorrelate();
 

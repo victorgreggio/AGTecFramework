@@ -1,8 +1,8 @@
-﻿using Microsoft.Azure.ServiceBus;
+﻿using Azure.Messaging.ServiceBus.Administration;
 
 namespace AGTec.Common.CQRS.Messaging.AzureServiceBus;
 
 public interface IAzureMessageFilterFactory
 {
-    RuleDescription Create(IMessageFilter filter);
+    CreateRuleOptions Create(IMessageFilter filter);
 }

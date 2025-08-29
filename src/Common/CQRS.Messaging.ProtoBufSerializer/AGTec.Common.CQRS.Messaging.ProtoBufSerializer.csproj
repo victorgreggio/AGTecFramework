@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>AGTec.Common.CQRS.Messaging.ProtoBufSerializer</Title>
         <Authors>Victor Gregegio</Authors>
@@ -10,9 +10,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AGTec.Common.CQRS" Version="1.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
-        <PackageReference Include="protobuf-net" Version="3.2.45" />
+        <PackageReference Include="AGTec.Common.CQRS" Version="1.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
+        <PackageReference Include="protobuf-net" Version="3.2.56" />
     </ItemGroup>
 
 </Project>

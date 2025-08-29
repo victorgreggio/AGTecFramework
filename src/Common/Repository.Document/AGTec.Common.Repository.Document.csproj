@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>AGTec.Common.Repository.Document</Title>
         <Authors>Victor Gregegio</Authors>
@@ -11,8 +11,8 @@
 
 
     <ItemGroup>
-        <PackageReference Include="AGTec.Common.Document" Version="1.0.0"/>
-        <PackageReference Include="MongoDB.Driver" Version="3.0.0" />
+        <PackageReference Include="AGTec.Common.Document" Version="1.0.0" />
+        <PackageReference Include="Aspire.MongoDB.Driver" Version="9.4.1" />
     </ItemGroup>
 
 </Project>

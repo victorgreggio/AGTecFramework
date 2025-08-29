@@ -6,8 +6,7 @@ using AGTec.Common.Document.Entities;
 
 namespace AGTec.Common.Repository.Search;
 
-public interface IReadOnlyRepository<TEntity, TContext> : IDisposable where TContext : ISearchContext
-    where TEntity : class, IDocumentEntity
+public interface IReadOnlyRepository<TEntity> : IDisposable where TEntity : class, IDocumentEntity
 {
     Task<TEntity> GetById(Guid id);
 

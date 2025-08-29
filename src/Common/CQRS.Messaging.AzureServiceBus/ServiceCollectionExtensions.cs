@@ -1,6 +1,5 @@
 ﻿using System;
 using AGTec.Common.CQRS.Dispatchers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AGTec.Common.CQRS.Messaging.AzureServiceBus;
@@ -8,33 +7,32 @@ namespace AGTec.Common.CQRS.Messaging.AzureServiceBus;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCQRSWithMessaging(this IServiceCollection services,
-        IConfiguration configuration)
+        string connectionString)
     {
-        services.AddCQRS(configuration);
+        services.AddCQRS();
         services.AddTransient<IEventDispatcher, EventDispatcher>();
-        services.AddMessaging(configuration);
+        services.AddMessaging(connectionString);
         return services;
     }
 
     private static IServiceCollection AddMessaging(this IServiceCollection services,
-        IConfiguration configuration)
+        string connectionString)
     {
         services.AddTransient<IMessageProcessor, MessageProcessor>();
 
         // Adds AzureServiceBus as MessageBroker.
-        services.AddAzureServiceBusMessaging(configuration);
+        services.AddAzureServiceBusMessaging(connectionString);
 
         return services;
     }
 
     private static IServiceCollection AddAzureServiceBusMessaging(this IServiceCollection services,
-        IConfiguration configuration)
+        string connectionString)
     {
-        var azureMessageBusConfiguration = configuration.GetSection(AzureMessageBusConfiguration.ConfigSectionName)
-            .Get<AzureMessageBusConfiguration>();
+        var azureMessageBusConfiguration = new AzureMessageBusConfiguration { ConnectionString = connectionString };
 
         if (azureMessageBusConfiguration.IsValid() == false)
-            throw new Exception($"Configuration section '{AzureMessageBusConfiguration.ConfigSectionName}' not found.");
+            throw new Exception($"Invalid AzureServiceBus configuration.");
 
         services.AddSingleton<IMessageBusConfiguration>(azureMessageBusConfiguration);
         services.AddTransient<IAzureMessageFilterFactory, AzureMessageFilterFactory>();

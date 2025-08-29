@@ -1,25 +1,34 @@
 ﻿using AGTec.Common.CQRS.Messaging.Exceptions;
-using Microsoft.Azure.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 
 namespace AGTec.Common.CQRS.Messaging.AzureServiceBus;
 
 internal class AzureMessageFilterFactory : IAzureMessageFilterFactory
 {
-    public RuleDescription Create(IMessageFilter filter)
+    public CreateRuleOptions Create(IMessageFilter filter)
     {
         switch (filter.Type)
         {
             case MessageFilterType.CorrelationIdFilter:
-                return new RuleDescription(filter.Name,
-                    new CorrelationFilter(filter.Expression));
+                return new CreateRuleOptions
+                {
+                    Name = filter.Name,
+                    Filter = new CorrelationRuleFilter { CorrelationId = filter.Expression }
+                };
 
             case MessageFilterType.LabelFilter:
-                return new RuleDescription(filter.Name,
-                    new CorrelationFilter { Label = filter.Expression });
+                return new CreateRuleOptions
+                {
+                    Name = filter.Name,
+                    Filter = new CorrelationRuleFilter { Subject = filter.Expression }
+                };
 
             case MessageFilterType.QueryFilter:
-                return new RuleDescription(filter.Name,
-                    new SqlFilter(filter.Expression));
+                return new CreateRuleOptions
+                {
+                    Name = filter.Name,
+                    Filter = new SqlRuleFilter(filter.Expression)
+                };
 
             default:
                 throw new InvalidMessageFilterException(

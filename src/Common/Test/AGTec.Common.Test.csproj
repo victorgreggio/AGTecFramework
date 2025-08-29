@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>AGTec.Common.Test</Title>
         <Authors>Victor Gregegio</Authors>
@@ -10,8 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMoqCore" Version="2.1.0"/>
-        <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
+        <PackageReference Include="AutoMoqCore" Version="2.1.0" />
+        <PackageReference Include="MSTest.TestFramework" Version="3.10.3" />
     </ItemGroup>
 
 </Project>

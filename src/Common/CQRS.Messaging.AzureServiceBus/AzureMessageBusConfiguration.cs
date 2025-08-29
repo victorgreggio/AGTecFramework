@@ -2,9 +2,7 @@
 
 public class AzureMessageBusConfiguration : IMessageBusConfiguration
 {
-    public const string ConfigSectionName = "AzureServiceBus";
-
-    public string ConnectionString { get; set; }
+    public string ConnectionString { get; init; }
 
     public bool IsValid()
     {

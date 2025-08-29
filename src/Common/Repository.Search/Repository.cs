@@ -1,24 +1,24 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using AGTec.Common.Document.Entities;
 using AGTec.Common.Repository.Search.Exceptions;
 using AGTec.Common.Repository.Search.Extensions;
+using Elastic.Clients.Elasticsearch;
+using System;
+using System.Threading.Tasks;
 
 namespace AGTec.Common.Repository.Search;
 
-public abstract class Repository<TEntity, TContext> :
-    ReadOnlyRepository<TEntity, TContext>,
-    IRepository<TEntity, TContext> where TContext : ISearchContext where TEntity : class, IDocumentEntity
+public abstract class Repository<TEntity> :
+    ReadOnlyRepository<TEntity>,
+    IRepository<TEntity> where TEntity : class, IDocumentEntity
 {
-    protected Repository(TContext context)
-        : base(context)
+    protected Repository(ElasticsearchClient client)
+        : base(client)
     {
     }
 
     public async Task Insert(TEntity document)
     {
-        var response = await Context.Client.IndexAsync(document: document, index: CollectionName);
+        var response = await Client.IndexAsync(document, CollectionName, id: document.Id);
         if (response.IsValidResponse == false)
             throw new InvalidResponseException(response.DebugInformation);
     }
@@ -35,8 +35,7 @@ public abstract class Repository<TEntity, TContext> :
 
         document.SetSchemaVersion();
 
-        var response = await Context
-            .Client.UpdateAsync<TEntity, TEntity>(CollectionName,
+        var response = await Client.UpdateAsync<TEntity, TEntity>(CollectionName,
                 document.Id,
                 u => u.Doc(document));
 
@@ -45,7 +44,7 @@ public abstract class Repository<TEntity, TContext> :
 
     public async Task<bool> Delete(TEntity document)
     {
-        var response = await Context.Client.DeleteAsync(CollectionName, document.Id);
+        var response = await Client.DeleteAsync(CollectionName, document.Id);
         return response.IsValidResponse;
     }
 }

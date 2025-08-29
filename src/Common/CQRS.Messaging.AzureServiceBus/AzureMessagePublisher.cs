@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
-using Microsoft.Azure.ServiceBus.Core;
+using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Logging;
 
 namespace AGTec.Common.CQRS.Messaging.AzureServiceBus;
@@ -25,21 +24,20 @@ public sealed class AzureMessagePublisher : IMessagePublisher
     {
         var messagePayload = _serializer.Serialize(message);
 
-        ISenderClient senderClient = type == PublishType.Queue
-            ? new QueueClient(_configuration.ConnectionString, destName)
-            : new TopicClient(_configuration.ConnectionString, destName);
+        await using var client = new ServiceBusClient(_configuration.ConnectionString);
+        var sender = client.CreateSender(destName);
 
         var messageGuid = Guid.NewGuid().ToString();
 
-        await senderClient.SendAsync(new Microsoft.Azure.ServiceBus.Message(messagePayload)
+        var serviceBusMessage = new ServiceBusMessage(messagePayload)
         {
             CorrelationId = message.Id.ToString(),
             MessageId = messageGuid,
             ContentType = _serializer.ContentType,
-            Label = message.Label
-        });
+            Subject = message.Label
+        };
 
-        await senderClient.CloseAsync();
+        await sender.SendMessageAsync(serviceBusMessage);
 
         _logger.LogInformation($"Message {messageGuid} published to {destName}.");
     }
