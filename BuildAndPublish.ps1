@@ -58,10 +58,6 @@ $projects = @(
         Path = "src\Common\CQRS"
     },
     @{
-        Name = "AGTec.Common.CQRS.Messaging.ActiveMQ"
-        Path = "src\Common\CQRS.Messaging.ActiveMQ"
-    },
-    @{
         Name = "AGTec.Common.CQRS.Messaging.AzureServiceBus"
         Path = "src\Common\CQRS.Messaging.AzureServiceBus"
     },
@@ -72,10 +68,6 @@ $projects = @(
     @{
         Name = "AGTec.Common.CQRS.Messaging.ProtoBufSerializer"
         Path = "src\Common\CQRS.Messaging.ProtoBufSerializer"
-    },
-    @{
-        Name = "AGTec.Common.HttpClient"
-        Path = "src\Common\HttpClient"
     },
     @{
         Name = "AGTec.Common.Monitor"
@@ -96,10 +88,6 @@ $projects = @(
     @{
         Name = "AGTec.Common.Repository.Search"
         Path = "src\Common\Repository.Search"
-    },
-    @{
-        Name = "AGTec.Common.SignalR"
-        Path = "src\Common\SignalR"
     },
     @{
         Name = "AGTec.Common.Test"
