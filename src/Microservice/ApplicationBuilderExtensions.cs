@@ -53,7 +53,11 @@ public static class ApplicationBuilderExtensions
 
         app.UseCors("CorsPolicy");
 
-        app.UseEndpoints(endpoints => { endpoints.MapControllers().RequireAuthorization(); });
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapOpenApi();
+            endpoints.MapControllers().RequireAuthorization();
+        });
 
         return app;
     }

@@ -101,6 +101,9 @@ public static class ServiceCollectionExtensions
             opts.Filters.Add<CorrelationIdFilter>();
         });
 
+        // OpenAPI
+        services.AddOpenApi();
+
         return services;
     }
 
