@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace AGTec.Common.BackgroundTaskQueue;
 
-public abstract class BackgroundService<T> : IHostedService, IDisposable
+public abstract class BackgroundService: IHostedService, IDisposable
 {
     private readonly CancellationTokenSource _stoppingCts = new();
 
@@ -24,5 +24,5 @@ public abstract class BackgroundService<T> : IHostedService, IDisposable
         await Task.Run(() => _stoppingCts.Cancel(), cancellationToken);
     }
 
-    protected abstract Task<T> ExecuteAsync(CancellationToken stoppingToken);
+    protected abstract Task ExecuteAsync(CancellationToken stoppingToken);
 }

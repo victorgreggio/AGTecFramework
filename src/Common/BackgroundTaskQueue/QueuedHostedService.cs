@@ -5,14 +5,12 @@ using Microsoft.Extensions.Logging;
 
 namespace AGTec.Common.BackgroundTaskQueue;
 
-public class QueuedHostedService : BackgroundService<int>
+public class QueuedHostedService : BackgroundService
 {
-    private const int THREAD_SLEEP_TIME_WHILE_PAUSED = 5000; // 5 seconds
+    private const int TASK_DELAY = 5000; // 5 seconds
     private readonly ILogger<QueuedHostedService> _logger;
 
     private readonly IBackgroundTaskQueue _tasksToRun;
-
-    private int _tasksCounter;
 
     public QueuedHostedService(IBackgroundTaskQueue tasksToRun,
         ILogger<QueuedHostedService> logger)
@@ -21,7 +19,7 @@ public class QueuedHostedService : BackgroundService<int>
         _logger = logger;
     }
 
-    protected override async Task<int> ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (stoppingToken.IsCancellationRequested == false)
         {
@@ -36,7 +34,6 @@ public class QueuedHostedService : BackgroundService<int>
                     await taskToRun.Value(stoppingToken);
 
                     _logger.LogInformation($"Finished '{taskToRun.Key}'.");
-                    _tasksCounter++;
                 }
                 catch (Exception ex)
                 {
@@ -44,9 +41,7 @@ public class QueuedHostedService : BackgroundService<int>
                 }
             }
 
-            Thread.Sleep(THREAD_SLEEP_TIME_WHILE_PAUSED);
+            await Task.Delay(TASK_DELAY, stoppingToken);
         }
-
-        return _tasksCounter;
     }
 }

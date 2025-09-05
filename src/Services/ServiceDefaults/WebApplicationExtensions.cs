@@ -12,13 +12,15 @@ public static class WebApplicationExtensions
     public static WebApplication UseServiceDefaults(this WebApplication app) => app.UseBaseDefaultServices();
     public static WebApplication UseServiceDefaults<TContext>(this WebApplication app) where TContext : DbContext
     {
+        app.UseBaseDefaultServices();
+
         // Run Migrations
         using (var scope = app.Services.CreateScope())
         {
             if (scope.ServiceProvider.GetService<TContext>() is DbContext dbContext)
                 DbInitializer.Initialize(dbContext);
         }
-        return app.UseBaseDefaultServices();
+        return app;
     }
 
     private static WebApplication UseBaseDefaultServices(this WebApplication app)
@@ -31,7 +33,6 @@ public static class WebApplicationExtensions
         app.UseAuthorization();
         app.MapHealthChecks("/health");
         app.MapOpenApi();
-        app.MapControllers().RequireAuthorization();
         return app;
     }
 }

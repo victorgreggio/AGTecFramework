@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
@@ -37,7 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AGTec.Common.Repository.Sea
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
-		BuildAndPublish.ps1 = BuildAndPublish.ps1
+		build\BuildAndPublish.ps1 = build\BuildAndPublish.ps1
+		build\BuildAndPublish.sh = build\BuildAndPublish.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{137FC3FF-02F3-40B8-BE9B-DEF2ACD5E04F}"

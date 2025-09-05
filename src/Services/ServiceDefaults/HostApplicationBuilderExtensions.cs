@@ -71,7 +71,7 @@ public static class HostApplicationBuilderExtensions
         builder.Services.AddAuth(builder.Configuration);
 
         // Queued Tasks
-        builder.Services.AddHostedService<QueuedHostedService>();
+        //builder.Services.AddHostedService<QueuedHostedService>();
         builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
         // Controllers with Action Filters
