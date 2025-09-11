@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace AGTec.Services.ServiceDefaults;
 
@@ -24,11 +25,10 @@ public static class WebApplicationExtensions
     private static WebApplication UseBaseDefaultServices(this WebApplication app)
     {
 
-        app.UseHttpsRedirection();
-
-        app.UseStaticFiles();
-
-        app.UseRouting();
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseHttpsRedirection();
+        }
 
         app.MapHealthChecks("/health");
 

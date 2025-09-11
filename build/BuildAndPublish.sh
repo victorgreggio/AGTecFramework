@@ -42,7 +42,6 @@ projects=(
     "AGTec.Common.CQRS.Messaging.AzureServiceBus:../src/Common/CQRS.Messaging.AzureServiceBus"
     "AGTec.Common.CQRS.Messaging.JsonSerializer:../src/Common/CQRS.Messaging.JsonSerializer"
     "AGTec.Common.CQRS.Messaging.ProtoBufSerializer:../src/Common/CQRS.Messaging.ProtoBufSerializer"
-    "AGTec.Common.Monitor:../src/Common/Monitor"
     "AGTec.Common.Randomizer:../src/Common/Randomizer"
     "AGTec.Common.Repository:../src/Common/Repository"
     "AGTec.Common.Repository.Document:../src/Common/Repository.Document"

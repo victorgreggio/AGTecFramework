@@ -70,10 +70,6 @@ $projects = @(
         Path = "..\src\Common\CQRS.Messaging.ProtoBufSerializer"
     },
     @{
-        Name = "AGTec.Common.Monitor"
-        Path = "..\src\Common\Monitor"
-    },
-    @{
         Name = "AGTec.Common.Randomizer"
         Path = "..\src\Common\Randomizer"
     },
