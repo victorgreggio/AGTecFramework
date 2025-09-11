@@ -11,7 +11,7 @@
 
     <ItemGroup>
         <PackageReference Include="AGTec.Common.CQRS" Version="1.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
         <PackageReference Include="protobuf-net" Version="3.2.56" />
     </ItemGroup>
 

@@ -1,6 +1,4 @@
-﻿using AGTec.Common.Monitor;
-using AGTec.Services.ServiceDefaults.Database;
-using Correlate.AspNetCore;
+﻿using AGTec.Services.ServiceDefaults.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,14 +23,17 @@ public static class WebApplicationExtensions
 
     private static WebApplication UseBaseDefaultServices(this WebApplication app)
     {
+
+        app.UseHttpsRedirection();
+
         app.UseStaticFiles();
+
         app.UseRouting();
-        app.UseAGTecMonitor(app.Environment);
-        app.UseCorrelate();
-        app.UseAuthentication();
-        app.UseAuthorization();
+
         app.MapHealthChecks("/health");
+
         app.MapOpenApi();
+       
         return app;
     }
 }

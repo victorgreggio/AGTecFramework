@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("Release", "Debug")]$configuration = "Release",
+    [ValidateSet("Release", "Debug")]$configuration = "Debug",
     [string]$nugetRepo = "LocalNugetRepo",
     [string]$nugetRepoApiKey = "P@ssw0rd"
 )

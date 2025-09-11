@@ -1,12 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-using AGTec.Common.Base.Accessors;
-using AGTec.Common.CQRS.CommandHandlers;
+﻿using AGTec.Common.CQRS.CommandHandlers;
 using AGTec.Common.CQRS.Commands;
 using AGTec.Common.CQRS.Exceptions;
 using AGTec.Common.CQRS.Extensions;
 using AGTec.Common.CQRS.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace AGTec.Common.CQRS.Dispatchers;
 
@@ -25,11 +25,10 @@ public class CommandDispatcher : ICommandDispatcher
 
         if (command.IsPublishable())
         {
+            using var activity = new Activity("Publishing Command");
             var publishableAttr = command.GetPublishableAttribute();
 
-            var messageId = Guid.Empty.Equals(CorrelationIdAccessor.CorrelationId)
-                ? Guid.NewGuid()
-                : CorrelationIdAccessor.CorrelationId;
+            var messageId = activity.Id;
 
             var publisher = _serviceProvider.GetService<IMessagePublisher>();
             if (publisher == null) throw new MessagePublisherNotFoundException();

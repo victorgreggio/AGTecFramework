@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage: ./BuildAndPublish.sh [Release|Debug] [NugetRepo] [NugetRepoApiKey]
-configuration="${1:-Release}"
+configuration="${1:-Debug}"
 nugetRepo="${2:-LocalNugetRepo}"
 nugetRepoApiKey="${3:-P@ssw0rd}"
 

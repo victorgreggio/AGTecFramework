@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using AGTec.Common.Base.Accessors;
-using AGTec.Common.CQRS.Events;
+﻿using AGTec.Common.CQRS.Events;
 using AGTec.Common.CQRS.Extensions;
 using AGTec.Common.CQRS.Messaging;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace AGTec.Common.CQRS.Dispatchers;
 
@@ -23,11 +23,10 @@ public class EventDispatcher : IEventDispatcher
     {
         if (evt == null) throw new ArgumentNullException(nameof(evt));
 
+        using var activity = new Activity("Raising Event");
         var publishableAttr = evt.GetPublishableAttributes();
 
-        var messageId = Guid.Empty.Equals(CorrelationIdAccessor.CorrelationId)
-            ? Guid.NewGuid()
-            : CorrelationIdAccessor.CorrelationId;
+        var messageId = activity.Id;
 
         var payload = _serializer.Serialize(evt);
 
