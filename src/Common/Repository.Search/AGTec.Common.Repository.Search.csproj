@@ -11,7 +11,7 @@
 
     <ItemGroup>
         <PackageReference Include="AGTec.Common.Document" Version="1.0.0" />
-        <PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="9.4.1" />
+        <PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="9.5.0" />
     </ItemGroup>
 
 </Project>
