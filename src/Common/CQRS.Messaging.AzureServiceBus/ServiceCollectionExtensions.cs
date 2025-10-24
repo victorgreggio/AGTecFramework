@@ -38,6 +38,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IAzureMessageFilterFactory, AzureMessageFilterFactory>();
         services.AddTransient<IMessagePublisher, AzureMessagePublisher>();
         services.AddTransient<IMessageHandler, AzureMessageHandler>();
+        services.AddTransient<IAzureServiceBusProvisioner, AzureServiceBusProvisioner>();
 
         return services;
     }

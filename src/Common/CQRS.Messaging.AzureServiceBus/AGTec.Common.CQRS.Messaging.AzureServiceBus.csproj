@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <PackageReference Include="AGTec.Common.CQRS" Version="1.0.0" />
+        <PackageReference Include="Azure.Identity" Version="1.17.0" />
 		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
     </ItemGroup>

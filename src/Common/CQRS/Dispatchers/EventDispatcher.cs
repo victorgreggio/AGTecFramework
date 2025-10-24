@@ -23,10 +23,10 @@ public class EventDispatcher : IEventDispatcher
     {
         if (evt == null) throw new ArgumentNullException(nameof(evt));
 
-        using var activity = new Activity("Raising Event");
+        using var activity = new Activity("Raising Event").Start();
         var publishableAttr = evt.GetPublishableAttributes();
 
-        var messageId = activity.Id;
+        var messageId = Activity.Current?.Id ?? activity.Id;
 
         var payload = _serializer.Serialize(evt);
 
