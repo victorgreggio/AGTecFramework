@@ -73,49 +73,57 @@ public class AzureMessageHandler : IMessageHandler, IAsyncDisposable
 
         if (type == PublishType.Topic)
         {
-            _logger.LogInformation($"Configuring subscription rules for topic '{destName}', subscription '{subscriptionName}'");
-            
-            ServiceBusAdministrationClient adminClient;
-            if (ServiceBusConnectionHelper.IsEndpointUrl(_configuration.ConnectionString))
+            // Skip rule configuration for Service Bus Emulator as rules are pre-configured
+            if (_configuration.ConnectionString?.Contains("UseDevelopmentEmulator=true", StringComparison.OrdinalIgnoreCase) == true)
             {
-                var fullyQualifiedNamespace = ServiceBusConnectionHelper.ExtractFullyQualifiedNamespace(_configuration.ConnectionString);
-                adminClient = new ServiceBusAdministrationClient(fullyQualifiedNamespace, new DefaultAzureCredential());
+                _logger.LogInformation($"Using Service Bus Emulator. Skipping rule configuration for topic '{destName}', subscription '{subscriptionName}' - assuming rules are pre-configured.");
             }
             else
             {
-                adminClient = new ServiceBusAdministrationClient(_configuration.ConnectionString);
-            }
-
-            var existingRules = adminClient.GetRulesAsync(destName, subscriptionName);
-            var hasRules = false;
-            await foreach (var rule in existingRules)
-            {
-                hasRules = true;
-                _logger.LogInformation($"Deleting existing rule: {rule.Name}");
-                await adminClient.DeleteRuleAsync(destName, subscriptionName, rule.Name);
-            }
-
-            if (filters != null)
-            {
-                foreach (var filter in filters)
+                _logger.LogInformation($"Configuring subscription rules for topic '{destName}', subscription '{subscriptionName}'");
+                
+                ServiceBusAdministrationClient adminClient;
+                if (ServiceBusConnectionHelper.IsEndpointUrl(_configuration.ConnectionString))
                 {
-                    if (filter.IsValid())
+                    var fullyQualifiedNamespace = ServiceBusConnectionHelper.ExtractFullyQualifiedNamespace(_configuration.ConnectionString);
+                    adminClient = new ServiceBusAdministrationClient(fullyQualifiedNamespace, new DefaultAzureCredential());
+                }
+                else
+                {
+                    adminClient = new ServiceBusAdministrationClient(_configuration.ConnectionString);
+                }
+
+                var existingRules = adminClient.GetRulesAsync(destName, subscriptionName);
+                var hasRules = false;
+                await foreach (var rule in existingRules)
+                {
+                    hasRules = true;
+                    _logger.LogInformation($"Deleting existing rule: {rule.Name}");
+                    await adminClient.DeleteRuleAsync(destName, subscriptionName, rule.Name);
+                }
+
+                if (filters != null)
+                {
+                    foreach (var filter in filters)
                     {
-                        var ruleOptions = _filterFactory.Create(filter);
-                        _logger.LogInformation($"Creating filter rule: {ruleOptions.Name}");
-                        await adminClient.CreateRuleAsync(destName, subscriptionName, ruleOptions);
+                        if (filter.IsValid())
+                        {
+                            var ruleOptions = _filterFactory.Create(filter);
+                            _logger.LogInformation($"Creating filter rule: {ruleOptions.Name}");
+                            await adminClient.CreateRuleAsync(destName, subscriptionName, ruleOptions);
+                        }
                     }
                 }
-            }
-            else if (hasRules)
-            {
-                _logger.LogInformation("Creating default TrueRuleFilter to receive all messages");
-                var defaultRule = new CreateRuleOptions("$Default", new TrueRuleFilter());
-                await adminClient.CreateRuleAsync(destName, subscriptionName, defaultRule);
-            }
-            else
-            {
-                _logger.LogInformation("No existing rules found - subscription will use default rule");
+                else if (hasRules)
+                {
+                    _logger.LogInformation("Creating default TrueRuleFilter to receive all messages");
+                    var defaultRule = new CreateRuleOptions("$Default", new TrueRuleFilter());
+                    await adminClient.CreateRuleAsync(destName, subscriptionName, defaultRule);
+                }
+                else
+                {
+                    _logger.LogInformation("No existing rules found - subscription will use default rule");
+                }
             }
         }
 

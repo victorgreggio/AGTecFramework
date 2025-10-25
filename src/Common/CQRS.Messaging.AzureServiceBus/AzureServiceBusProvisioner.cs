@@ -24,6 +24,13 @@ public class AzureServiceBusProvisioner : IAzureServiceBusProvisioner
         if (string.IsNullOrWhiteSpace(queueName))
             throw new ArgumentException("Queue name cannot be null or empty.", nameof(queueName));
 
+        // Skip provisioning for Service Bus Emulator as entities are pre-configured
+        if (_configuration.ConnectionString?.Contains("UseDevelopmentEmulator=true", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            _logger.LogInformation($"Using Service Bus Emulator. Skipping provisioning for queue '{queueName}' - assuming it's pre-configured.");
+            return;
+        }
+
         var adminClient = CreateAdministrationClient();
 
         try
@@ -51,6 +58,13 @@ public class AzureServiceBusProvisioner : IAzureServiceBusProvisioner
     {
         if (string.IsNullOrWhiteSpace(topicName))
             throw new ArgumentException("Topic name cannot be null or empty.", nameof(topicName));
+
+        // Skip provisioning for Service Bus Emulator as entities are pre-configured
+        if (_configuration.ConnectionString?.Contains("UseDevelopmentEmulator=true", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            _logger.LogInformation($"Using Service Bus Emulator. Skipping provisioning for topic '{topicName}' - assuming it's pre-configured.");
+            return;
+        }
 
         var adminClient = CreateAdministrationClient();
 
@@ -82,6 +96,13 @@ public class AzureServiceBusProvisioner : IAzureServiceBusProvisioner
 
         if (string.IsNullOrWhiteSpace(subscriptionName))
             throw new ArgumentException("Subscription name cannot be null or empty.", nameof(subscriptionName));
+
+        // Skip provisioning for Service Bus Emulator as entities are pre-configured
+        if (_configuration.ConnectionString?.Contains("UseDevelopmentEmulator=true", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            _logger.LogInformation($"Using Service Bus Emulator. Skipping provisioning for subscription '{subscriptionName}' on topic '{topicName}' - assuming it's pre-configured.");
+            return;
+        }
 
         var adminClient = CreateAdministrationClient();
 
@@ -138,6 +159,13 @@ public class AzureServiceBusProvisioner : IAzureServiceBusProvisioner
 
         if (string.IsNullOrWhiteSpace(subscriptionName))
             throw new ArgumentException("Subscription name cannot be null or empty.", nameof(subscriptionName));
+
+        // Skip provisioning for Service Bus Emulator as entities are pre-configured
+        if (_configuration.ConnectionString?.Contains("UseDevelopmentEmulator=true", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            _logger.LogInformation($"Using Service Bus Emulator. Skipping default rule check for subscription '{subscriptionName}' on topic '{topicName}' - assuming it's pre-configured.");
+            return;
+        }
 
         var adminClient = CreateAdministrationClient();
 
