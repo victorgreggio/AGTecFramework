@@ -30,6 +30,9 @@ public static class HostApplicationBuilderExtensions
 
     private static IHostApplicationBuilder AddBaseServiceDefaults(this IHostApplicationBuilder builder)
     {
+        // Authentication
+        builder.AddJwtBearerAuthentication();
+
         // OpenTelemetry
         builder.ConfigureOpenTelemetry();
 

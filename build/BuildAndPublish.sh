@@ -5,6 +5,30 @@ configuration="${1:-Debug}"
 nugetRepo="${2:-LocalNugetRepo}"
 nugetRepoApiKey="${3:-P@ssw0rd}"
 
+ensure_nuget_source() {
+    source_name="$1"
+    
+    echo "Checking if NuGet source '$source_name' exists..."
+    sources=$(dotnet nuget list source)
+    
+    if ! echo "$sources" | grep -q "$source_name"; then
+        echo "NuGet source '$source_name' not found. Creating..."
+        
+        nuget_repo_path="$HOME/$source_name"
+        
+        if [ ! -d "$nuget_repo_path" ]; then
+            echo "Creating folder: $nuget_repo_path"
+            mkdir -p "$nuget_repo_path"
+        fi
+        
+        echo "Adding NuGet source '$source_name' at: $nuget_repo_path"
+        dotnet nuget add source "$nuget_repo_path" --name "$source_name"
+        echo "NuGet source '$source_name' added successfully."
+    else
+        echo "NuGet source '$source_name' already exists."
+    fi
+}
+
 get_project_version() {
     project_path="$1"
     project_name="$2"
@@ -32,6 +56,8 @@ build_and_publish() {
     package_file="$project_path/bin/$configuration/$project_name.$project_version.nupkg"
     dotnet nuget push "$package_file" --source "$nugetRepo" --api-key "$nugetRepoApiKey"
 }
+
+ensure_nuget_source "$nugetRepo"
 
 projects=(
     "AGTec.Common.Base:../src/Common/Base"

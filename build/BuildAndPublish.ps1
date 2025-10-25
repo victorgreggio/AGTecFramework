@@ -4,6 +4,32 @@ param(
     [string]$nugetRepoApiKey = "P@ssw0rd"
 )
 
+function EnsureNugetSource {
+    param(
+        [string]$sourceName
+    )
+
+    Write-Host "Checking if NuGet source '$sourceName' exists..."
+    $sources = dotnet nuget list source
+    
+    if ($sources -notmatch $sourceName) {
+        Write-Host "NuGet source '$sourceName' not found. Creating..."
+        
+        $nugetRepoPath = [IO.Path]::Combine($env:USERPROFILE, $sourceName)
+        
+        if (-not (Test-Path $nugetRepoPath)) {
+            Write-Host "Creating folder: $nugetRepoPath"
+            New-Item -ItemType Directory -Path $nugetRepoPath -Force | Out-Null
+        }
+        
+        Write-Host "Adding NuGet source '$sourceName' at: $nugetRepoPath"
+        dotnet nuget add source $nugetRepoPath --name $sourceName
+        Write-Host "NuGet source '$sourceName' added successfully."
+    } else {
+        Write-Host "NuGet source '$sourceName' already exists."
+    }
+}
+
 function BuildAndPublish {
     param(
         [string]$projectName,
@@ -35,6 +61,8 @@ function GetProjectVersion {
     return $result
 }
 
+
+EnsureNugetSource -sourceName $nugetRepo
 
 $projects = @(
     @{
