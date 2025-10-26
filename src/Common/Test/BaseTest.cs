@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AGTec.Common.Test;
 
@@ -6,22 +7,24 @@ namespace AGTec.Common.Test;
 public abstract class BaseTest
 {
     [TestInitialize]
-    public virtual void SetUp()
+    public virtual async Task SetUp()
     {
-        BeforeEachTest();
+        await BeforeEachTest();
     }
 
     [TestCleanup]
-    public void TearDown()
+    public async Task TearDown()
     {
-        AfterEachTest();
+        await AfterEachTest();
     }
 
-    protected virtual void BeforeEachTest()
+    protected virtual Task BeforeEachTest()
     {
+        return Task.CompletedTask;
     }
 
-    protected virtual void AfterEachTest()
+    protected virtual Task AfterEachTest()
     {
+        return Task.CompletedTask;
     }
 }

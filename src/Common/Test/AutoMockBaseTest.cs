@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AutoMoqCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -26,9 +27,9 @@ public abstract class AutoMockBaseTest<TSut, TContract>
         return AutoMocker.Resolve<TSut>();
     }
 
-    protected override void BeforeEachTest()
+    protected override async Task BeforeEachTest()
     {
-        base.BeforeEachTest();
+        await base.BeforeEachTest();
 
         AutoMocker = new AutoMoqer();
     }

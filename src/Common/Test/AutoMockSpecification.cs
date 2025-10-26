@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AGTec.Common.Test;
@@ -19,52 +20,54 @@ public abstract class AutoMockSpecification<TSut, TContract>
 
     protected bool CatchExceptionOnRunning { get; set; }
 
-    protected override void BeforeCreateSut()
+    protected override async Task BeforeCreateSut()
     {
-        GivenThat();
+        await GivenThat();
     }
 
-    protected override void AfterCreateSut()
+    protected override async Task AfterCreateSut()
     {
-        AndGivenThatAfterCreated();
+        await AndGivenThatAfterCreated();
 
         if (IsCreation) return;
 
-        var whenIRun = WhenIRun;
-
-        if (CatchExceptionOnRunning) whenIRun = () => RegisterException(WhenIRun);
-
-        whenIRun();
+        if (CatchExceptionOnRunning)
+            await RegisterExceptionAsync(WhenIRun);
+        else
+            await WhenIRun();
     }
 
-    protected override void AfterEachTest()
+    protected override async Task AfterEachTest()
     {
-        AndThenCleanUp();
+        await AndThenCleanUp();
     }
 
-    protected virtual void GivenThat()
+    protected virtual Task GivenThat()
     {
+        return Task.CompletedTask;
     }
 
-    protected virtual void AndGivenThatAfterCreated()
+    protected virtual Task AndGivenThatAfterCreated()
     {
+        return Task.CompletedTask;
     }
 
-    protected virtual void WhenIRun()
+    protected virtual Task WhenIRun()
     {
         throw new NotImplementedException(
             "Please implement WhenIRun in the derived class or use ConstructorSpecification attrubute in the class");
     }
 
-    protected virtual void AndThenCleanUp()
+    protected virtual Task AndThenCleanUp()
     {
+        return Task.CompletedTask;
     }
 
-    protected void RegisterException(Action action)
+    protected async Task RegisterExceptionAsync(Func<Task> action)
     {
         try
         {
-            action();
+            await action();
         }
         catch (Exception e)
         {

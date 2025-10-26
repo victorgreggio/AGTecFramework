@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AGTec.Common.Test;
 
@@ -9,23 +10,25 @@ public abstract class BaseTestWithSut<TSut>
     protected TSut Sut { get; set; }
 
     [TestInitialize]
-    public override void SetUp()
+    public override async Task SetUp()
     {
-        base.SetUp();
+        await base.SetUp();
 
-        BeforeCreateSut();
+        await BeforeCreateSut();
 
         Sut = CreateSut();
 
-        AfterCreateSut();
+        await AfterCreateSut();
     }
 
-    protected virtual void BeforeCreateSut()
+    protected virtual Task BeforeCreateSut()
     {
+        return Task.CompletedTask;
     }
 
-    protected virtual void AfterCreateSut()
+    protected virtual Task AfterCreateSut()
     {
+        return Task.CompletedTask;
     }
 
     protected abstract TSut CreateSut();
