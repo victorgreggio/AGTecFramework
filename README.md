@@ -18,12 +18,6 @@ The foundation package providing core CQRS implementation with:
 - **Dispatchers**: Command, Query, and Event dispatchers for routing requests to handlers
 - **Handlers**: Interfaces for implementing command, query, and event handlers
 
-#### AGTec.Common.CQRS.Messaging.AzureServiceBus
-Azure Service Bus integration for CQRS messaging:
-- Message publishing and handling
-- Event dispatching over Azure Service Bus
-- Message broker implementation for distributed systems
-
 #### AGTec.Common.CQRS.Messaging.JsonSerializer
 JSON serialization support for CQRS messages:
 - JSON-based message and payload serialization
@@ -106,9 +100,6 @@ Install packages from NuGet based on your needs:
 # Core CQRS
 dotnet add package AGTec.Common.CQRS
 
-# With Azure Service Bus messaging
-dotnet add package AGTec.Common.CQRS.Messaging.AzureServiceBus
-
 # Repository pattern
 dotnet add package AGTec.Common.Repository
 
@@ -123,12 +114,6 @@ dotnet add package AGTec.Services.ServiceDefaults
 ```csharp
 // In your Startup.cs or Program.cs
 services.AddCQRS();
-```
-
-#### Setting up CQRS with Azure Service Bus
-
-```csharp
-services.AddCQRSWithMessaging("your-azure-servicebus-connection-string");
 ```
 
 #### Using Service Defaults

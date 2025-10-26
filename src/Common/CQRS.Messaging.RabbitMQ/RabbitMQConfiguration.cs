@@ -1,6 +1,6 @@
-﻿namespace AGTec.Common.CQRS.Messaging.AzureServiceBus;
+namespace AGTec.Common.CQRS.Messaging.RabbitMQ;
 
-public class AzureMessageBusConfiguration : IMessageBusConfiguration
+public class RabbitMQConfiguration : IMessageBusConfiguration
 {
     public string ConnectionString { get; init; }
 

@@ -86,16 +86,16 @@ $projects = @(
         Path = "..\src\Common\CQRS"
     },
     @{
-        Name = "AGTec.Common.CQRS.Messaging.AzureServiceBus"
-        Path = "..\src\Common\CQRS.Messaging.AzureServiceBus"
-    },
-    @{
         Name = "AGTec.Common.CQRS.Messaging.JsonSerializer"
         Path = "..\src\Common\CQRS.Messaging.JsonSerializer"
     },
     @{
         Name = "AGTec.Common.CQRS.Messaging.ProtoBufSerializer"
         Path = "..\src\Common\CQRS.Messaging.ProtoBufSerializer"
+    },
+    @{
+        Name = "AGTec.Common.CQRS.Messaging.RabbitMQ"
+        Path = "..\src\Common\CQRS.Messaging.RabbitMQ"
     },
     @{
         Name = "AGTec.Common.Randomizer"
