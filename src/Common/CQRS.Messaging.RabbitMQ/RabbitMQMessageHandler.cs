@@ -20,7 +20,7 @@ public class RabbitMQMessageHandler : IMessageHandler, IAsyncDisposable
     private readonly IRabbitMQProvisioner _provisioner;
 
     private IConnection _connection;
-    private IModel _channel;
+    private IChannel _channel;
     private AsyncEventingBasicConsumer _consumer;
     private string _consumerTag;
 
@@ -79,17 +79,16 @@ public class RabbitMQMessageHandler : IMessageHandler, IAsyncDisposable
         }
 
         var factory = new ConnectionFactory { Uri = new Uri(_configuration.ConnectionString) };
-        factory.DispatchConsumersAsync = true;
 
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
+        _connection = await factory.CreateConnectionAsync();
+        _channel = await _connection.CreateChannelAsync();
 
-        _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
+        await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false);
 
         _consumer = new AsyncEventingBasicConsumer(_channel);
-        _consumer.Received += async (sender, args) => await ProcessMessageAsync(args);
+        _consumer.ReceivedAsync += async (sender, args) => await ProcessMessageAsync(args);
 
-        _consumerTag = _channel.BasicConsume(
+        _consumerTag = await _channel.BasicConsumeAsync(
             queue: queueName,
             autoAck: false,
             consumer: _consumer);
@@ -107,7 +106,7 @@ public class RabbitMQMessageHandler : IMessageHandler, IAsyncDisposable
                 !args.BasicProperties.ContentType.Equals(_serializer.ContentType))
             {
                 _logger.LogError($"Content type mismatch. Expected: {_serializer.ContentType}, Received: {args.BasicProperties.ContentType}");
-                _channel.BasicNack(args.DeliveryTag, false, false);
+                await _channel.BasicNackAsync(args.DeliveryTag, false, false);
                 return;
             }
 
@@ -127,14 +126,14 @@ public class RabbitMQMessageHandler : IMessageHandler, IAsyncDisposable
                 await processor.Process(messageBody);
             }
 
-            _channel.BasicAck(args.DeliveryTag, false);
+            await _channel.BasicAckAsync(args.DeliveryTag, false);
             
             _logger.LogInformation($"Message {args.BasicProperties?.MessageId} processed successfully.");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error processing message {args.BasicProperties?.MessageId}.");
-            _channel.BasicNack(args.DeliveryTag, false, true);
+            await _channel.BasicNackAsync(args.DeliveryTag, false, true);
         }
     }
 
@@ -142,15 +141,19 @@ public class RabbitMQMessageHandler : IMessageHandler, IAsyncDisposable
     {
         if (_consumerTag != null && _channel != null)
         {
-            _channel.BasicCancel(_consumerTag);
+            await _channel.BasicCancelAsync(_consumerTag);
         }
 
-        _channel?.Close();
-        _channel?.Dispose();
+        if (_channel != null)
+        {
+            await _channel.CloseAsync();
+            await _channel.DisposeAsync();
+        }
 
-        _connection?.Close();
-        _connection?.Dispose();
-
-        await Task.CompletedTask;
+        if (_connection != null)
+        {
+            await _connection.CloseAsync();
+            await _connection.DisposeAsync();
+        }
     }
 }

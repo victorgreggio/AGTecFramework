@@ -18,7 +18,7 @@ public class RabbitMQProvisioner : IRabbitMQProvisioner
         _logger = logger;
     }
 
-    public Task EnsureQueueExistsAsync(string queueName)
+    public async Task EnsureQueueExistsAsync(string queueName)
     {
         if (string.IsNullOrWhiteSpace(queueName))
             throw new ArgumentException("Queue name cannot be null or empty.", nameof(queueName));
@@ -26,10 +26,10 @@ public class RabbitMQProvisioner : IRabbitMQProvisioner
         try
         {
             var factory = new ConnectionFactory { Uri = new Uri(_configuration.ConnectionString) };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
+            await using var connection = await factory.CreateConnectionAsync();
+            await using var channel = await connection.CreateChannelAsync();
 
-            channel.QueueDeclare(
+            await channel.QueueDeclareAsync(
                 queue: queueName,
                 durable: true,
                 exclusive: false,
@@ -43,11 +43,9 @@ public class RabbitMQProvisioner : IRabbitMQProvisioner
             _logger.LogError(ex, $"Error ensuring queue '{queueName}' exists.");
             throw;
         }
-
-        return Task.CompletedTask;
     }
 
-    public Task EnsureExchangeExistsAsync(string exchangeName)
+    public async Task EnsureExchangeExistsAsync(string exchangeName)
     {
         if (string.IsNullOrWhiteSpace(exchangeName))
             throw new ArgumentException("Exchange name cannot be null or empty.", nameof(exchangeName));
@@ -55,10 +53,10 @@ public class RabbitMQProvisioner : IRabbitMQProvisioner
         try
         {
             var factory = new ConnectionFactory { Uri = new Uri(_configuration.ConnectionString) };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
+            await using var connection = await factory.CreateConnectionAsync();
+            await using var channel = await connection.CreateChannelAsync();
 
-            channel.ExchangeDeclare(
+            await channel.ExchangeDeclareAsync(
                 exchange: exchangeName,
                 type: ExchangeType.Topic,
                 durable: true,
@@ -72,11 +70,9 @@ public class RabbitMQProvisioner : IRabbitMQProvisioner
             _logger.LogError(ex, $"Error ensuring exchange '{exchangeName}' exists.");
             throw;
         }
-
-        return Task.CompletedTask;
     }
 
-    public Task EnsureBindingExistsAsync(string exchangeName, string queueName, string routingKey)
+    public async Task EnsureBindingExistsAsync(string exchangeName, string queueName, string routingKey)
     {
         if (string.IsNullOrWhiteSpace(exchangeName))
             throw new ArgumentException("Exchange name cannot be null or empty.", nameof(exchangeName));
@@ -87,10 +83,10 @@ public class RabbitMQProvisioner : IRabbitMQProvisioner
         try
         {
             var factory = new ConnectionFactory { Uri = new Uri(_configuration.ConnectionString) };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
+            await using var connection = await factory.CreateConnectionAsync();
+            await using var channel = await connection.CreateChannelAsync();
 
-            channel.QueueBind(
+            await channel.QueueBindAsync(
                 queue: queueName,
                 exchange: exchangeName,
                 routingKey: routingKey ?? "#");
@@ -102,7 +98,5 @@ public class RabbitMQProvisioner : IRabbitMQProvisioner
             _logger.LogError(ex, $"Error ensuring binding between exchange '{exchangeName}' and queue '{queueName}' exists.");
             throw;
         }
-
-        return Task.CompletedTask;
     }
 }

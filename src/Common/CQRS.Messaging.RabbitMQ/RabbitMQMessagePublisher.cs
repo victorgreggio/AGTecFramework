@@ -41,24 +41,27 @@ public sealed class RabbitMQMessagePublisher : IMessagePublisher
         _logger.LogInformation($"Serialized message payload size: {messagePayload.Length} bytes. ContentType: {_serializer.ContentType}");
 
         var factory = new ConnectionFactory { Uri = new Uri(_configuration.ConnectionString) };
-        using var connection = factory.CreateConnection();
-        using var channel = connection.CreateModel();
+        await using var connection = await factory.CreateConnectionAsync();
+        await using var channel = await connection.CreateChannelAsync();
 
-        var properties = channel.CreateBasicProperties();
-        properties.Persistent = true;
-        properties.ContentType = _serializer.ContentType;
-        properties.CorrelationId = message.Id.ToString();
-        properties.MessageId = Guid.NewGuid().ToString();
-        properties.Type = message.Label;
+        var properties = new BasicProperties
+        {
+            Persistent = true,
+            ContentType = _serializer.ContentType,
+            CorrelationId = message.Id.ToString(),
+            MessageId = Guid.NewGuid().ToString(),
+            Type = message.Label
+        };
 
         string exchangeName = type == PublishType.Topic ? destName : string.Empty;
         string routingKey = type == PublishType.Queue ? destName : message.Label ?? string.Empty;
 
         _logger.LogInformation($"Sending message {properties.MessageId} with CorrelationId: {message.Id}, Type: {message.Label}");
         
-        channel.BasicPublish(
+        await channel.BasicPublishAsync(
             exchange: exchangeName,
             routingKey: routingKey,
+            mandatory: false,
             basicProperties: properties,
             body: messagePayload);
 
