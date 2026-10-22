@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- TargetFramework / Nullable / ImplicitUsings come from Directory.Build.props -->
+    <IsPackable>true</IsPackable>
+    <Description>AGTecFramework local text-extraction adapter for ITextExtractor: plain text/markdown, PDF (PdfPig), and Word (.docx via OpenXml), with no cloud dependency.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AGTec.Content\AGTec.Content.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PdfPig" />
+    <PackageReference Include="DocumentFormat.OpenXml" />
+    <PackageReference Include="System.IO.Packaging" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+</Project>

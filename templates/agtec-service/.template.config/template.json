@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Copperleaf",
+  "classifications": [ "Web", "WebAPI", "Microservice", "AGTec" ],
+  "identity": "AGTec.Service.CSharp",
+  "name": "AGTecFramework Service",
+  "shortName": "agtec-service",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "AGTecService",
+  "preferNameDirectory": true,
+  "symbols": {
+    "AGTecVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "0.1.*",
+      "replaces": "AGTEC_VERSION",
+      "description": "AGTecFramework package version to reference."
+    }
+  }
+}

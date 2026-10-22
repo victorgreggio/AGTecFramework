@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- TargetFramework / Nullable / ImplicitUsings come from Directory.Build.props -->
+    <IsPackable>true</IsPackable>
+    <Description>AGTecFramework pgvector adapter for IVectorStore (PostgreSQL + the vector extension).</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AGTec.VectorData\AGTec.VectorData.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+</Project>

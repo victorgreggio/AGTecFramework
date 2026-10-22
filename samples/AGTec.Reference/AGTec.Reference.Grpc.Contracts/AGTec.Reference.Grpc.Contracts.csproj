@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- TargetFramework / Nullable / ImplicitUsings come from Directory.Build.props -->
+    <IsPackable>true</IsPackable>
+    <Description>Contract-first gRPC contracts (.proto) for the Advisory service, generating client and server stubs.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" />
+  </ItemGroup>
+
+  <!-- Generate both the server base and the typed client from one shared contract. -->
+  <ItemGroup>
+    <Protobuf Include="Protos/advisory.proto" GrpcServices="Both" />
+  </ItemGroup>
+</Project>

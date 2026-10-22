@@ -1,0 +1,59 @@
+name: Mend Security Scan
+
+# Mend SCA (dependencies) + SAST (code), modeled on Copperleaf's Core Suite scan.
+# Runs weekly and on demand. Set MEND_* as repository or organization secrets.
+
+on:
+  schedule:
+    - cron: '0 15 * * 1'   # Mondays 07:00 PST (15:00 UTC)
+  workflow_dispatch:
+    inputs:
+      enableSca:
+        description: 'Run SCA (mend dep)'
+        type: boolean
+        default: true
+      enableSast:
+        description: 'Run SAST (mend code)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+  MEND_URL: ${{ secrets.MEND_URL }}
+  MEND_EMAIL: ${{ secrets.MEND_EMAIL }}
+  MEND_USER_KEY: ${{ secrets.MEND_USER_KEY }}
+  MEND_ORGANIZATION: ${{ secrets.MEND_ORGANIZATION }}
+  MEND_SCOPE: 'AGTecFramework//AGTecFramework'
+
+jobs:
+  mend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # SCA resolves the restored dependency graph, so restore first.
+      - name: Restore
+        run: dotnet restore
+
+      - name: Install Mend CLI
+        run: |
+          curl -fsSL https://downloads.mend.io/cli/linux_amd64/mend -o mend
+          chmod +x mend
+          sudo mv mend /usr/local/bin/mend
+
+      - name: Mend SCA (dependencies)
+        if: ${{ inputs.enableSca != false }}
+        run: mend dep --update --scope "$MEND_SCOPE"
+
+      - name: Mend SAST (code)
+        if: ${{ inputs.enableSast != false }}
+        run: mend code --scope "$MEND_SCOPE"

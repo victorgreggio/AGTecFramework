@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="NetArchTest.Rules" />
+  </ItemGroup>
+
+  <!-- Reference the assemblies whose dependencies we assert on. Infrastructure pulls the
+       rest transitively, which is only used to load them for inspection. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AGTec.Domain\AGTec.Domain.csproj" />
+    <ProjectReference Include="..\..\src\AGTec.Application\AGTec.Application.csproj" />
+    <ProjectReference Include="..\..\src\AGTec.Platform\AGTec.Platform.csproj" />
+    <ProjectReference Include="..\..\samples\AGTec.Reference\AGTec.Reference.Domain\AGTec.Reference.Domain.csproj" />
+    <ProjectReference Include="..\..\samples\AGTec.Reference\AGTec.Reference.Application\AGTec.Reference.Application.csproj" />
+    <ProjectReference Include="..\..\samples\AGTec.Reference\AGTec.Reference.Infrastructure\AGTec.Reference.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>

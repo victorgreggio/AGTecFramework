@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <!-- TargetFramework / Nullable / ImplicitUsings come from Directory.Build.props -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AGTec.Reference.Grpc.Contracts\AGTec.Reference.Grpc.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\src\AGTec.ServiceDefaults\AGTec.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\..\src\AGTec.Grpc\AGTec.Grpc.csproj" />
+  </ItemGroup>
+</Project>

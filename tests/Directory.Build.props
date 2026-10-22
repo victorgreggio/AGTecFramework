@@ -1,0 +1,12 @@
+<Project>
+  <!-- Inherit the repo-wide settings, then relax a couple of rules for test projects. -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <!-- Underscored test names are the convention (CA1707); concrete-type perf nits
+         (CA1859) don't matter in tests; and test fixtures manage disposable fields through
+         xUnit's lifecycle (IAsyncLifetime), which CA1001 doesn't model. -->
+    <NoWarn>$(NoWarn);CA1707;CA1859;CA1001;CA1861</NoWarn>
+  </PropertyGroup>
+</Project>

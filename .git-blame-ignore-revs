@@ -1,0 +1,10 @@
+# Revisions listed here are skipped by `git blame --ignore-revs-file=.git-blame-ignore-revs`
+# and by the GitHub / Azure DevOps blame UIs (when configured to honour the file).
+#
+# Add ONLY purely-mechanical, no-content-change commits — large reformats,
+# line-ending renormalizations, automated tool runs (csharpier, prettier, etc.).
+#
+# Local one-time setup (so this file is honoured by default):
+#     git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# After committing a repo-wide `dotnet csharpier format .`, append its commit hash below.

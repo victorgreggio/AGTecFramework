@@ -1,0 +1,58 @@
+# Image coordinates (push to ACR, e.g. myregistry.azurecr.io).
+image:
+  registry: myregistry.azurecr.io
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+# Messaging transport, selected by config (Local | RabbitMq | AzureServiceBus).
+# In AKS/Azure the default is Azure Service Bus — same image as local, no recompile.
+messagingProvider: AzureServiceBus
+
+# Search read model, selected by config (InMemory | Elasticsearch).
+searchProvider: Elasticsearch
+
+# Secrets provider (Configuration | AzureKeyVault) and the vault URI when Key Vault is used.
+secretsProvider: AzureKeyVault
+keyVaultUri: "https://my-vault.vault.azure.net/"
+
+# Object storage provider (InMemory | AzureBlob).
+storageProvider: AzureBlob
+
+# Malware scanning for uploads (None | ClamAv). None defers scanning to the storage
+# layer (e.g. Microsoft Defender for Storage). ClamAv scans inline via a clamd endpoint.
+scannerProvider: None
+
+# Telemetry: OTLP endpoint (Azure Monitor collector, or any OTLP backend). Empty = off.
+otlpEndpoint: ""
+
+# Connection strings are NOT stored in the chart. Provide a pre-created Kubernetes Secret
+# (e.g. synced from Azure Key Vault via the Secrets Store CSI driver) with keys:
+#   ConnectionStrings__forecasts  ConnectionStrings__messaging  ConnectionStrings__search  ConnectionStrings__blobs
+existingSecret: agtec-reference-secrets
+
+api:
+  replicas: 2
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits:   { cpu: 500m, memory: 256Mi }
+
+advisory:
+  replicas: 1
+  resources:
+    requests: { cpu: 50m, memory: 96Mi }
+    limits:   { cpu: 250m, memory: 192Mi }
+
+worker:
+  replicas: 1
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits:   { cpu: 500m, memory: 256Mi }
+  # KEDA: scale the worker on RabbitMQ queue depth (scales to zero when idle).
+  keda:
+    enabled: false
+    minReplicas: 0
+    maxReplicas: 10
+    queueName: agtec.forecasts.worker
+    queueLength: "20"
+    # Name of a Secret holding the 'host' AMQP connection string for the KEDA trigger auth.
+    triggerAuthSecret: agtec-reference-secrets

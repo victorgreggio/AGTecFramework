@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest  # Docker is available for the Testcontainers integration tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore tools (CSharpier, Husky)
+        run: dotnet tool restore
+
+      - name: Restore
+        run: dotnet restore
+
+      # Formatting is a gate: the build fails if anything isn't CSharpier-clean.
+      - name: Format check (CSharpier)
+        run: dotnet csharpier check .
+
+      # ContinuousIntegrationBuild=true turns warnings into errors (see Directory.Build.props).
+      - name: Build (warnings as errors)
+        run: dotnet build --no-restore -c Release -p:ContinuousIntegrationBuild=true
+
+      # Lightweight SCA: fail on any known-vulnerable NuGet package (direct or transitive).
+      - name: NuGet vulnerability audit
+        run: |
+          dotnet list package --vulnerable --include-transitive 2>&1 | tee audit.txt
+          if grep -q "has the following vulnerable packages" audit.txt; then
+            echo "::error::Vulnerable NuGet packages detected."
+            exit 1
+          fi
+
+      - name: Test
+        run: dotnet test --no-build -c Release --verbosity normal
+
+  publish-packages:
+    name: Publish NuGet packages
+    needs: build-and-test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore AGTecFramework.slnx
+
+      - name: Pack release packages
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Tag '$GITHUB_REF_NAME' must use the format vMAJOR.MINOR.PATCH, optionally with a prerelease or build suffix."
+            exit 1
+          fi
+
+          mkdir -p artifacts/packages
+          for project in src/*/*.csproj; do
+            dotnet pack "$project" --no-restore --configuration Release \
+              --output artifacts/packages \
+              -p:ContinuousIntegrationBuild=true \
+              -p:PackageVersion="$VERSION"
+          done
+
+      - name: Publish to GitHub Packages
+        shell: bash
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet nuget push 'artifacts/packages/*.nupkg' \
+            --source 'https://nuget.pkg.github.com/victorgreggio/index.json' \
+            --api-key "$NUGET_AUTH_TOKEN" \
+            --skip-duplicate

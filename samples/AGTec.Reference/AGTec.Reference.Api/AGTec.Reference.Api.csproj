@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <!-- TargetFramework / Nullable / ImplicitUsings come from Directory.Build.props -->
+    <IsPackable>false</IsPackable>
+    <UserSecretsId>agtec-reference-api</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AGTec.Reference.Application\AGTec.Reference.Application.csproj" />
+    <ProjectReference Include="..\AGTec.Reference.Infrastructure\AGTec.Reference.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\AGTec.ServiceDefaults\AGTec.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\AGTec.Reference.Grpc.Contracts\AGTec.Reference.Grpc.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\src\AGTec.Grpc\AGTec.Grpc.csproj" />
+    <ProjectReference Include="..\..\..\src\AGTec.Security\AGTec.Security.csproj" />
+    <ProjectReference Include="..\..\..\src\AGTec.Api\AGTec.Api.csproj" />
+    <ProjectReference Include="..\..\..\src\AGTec.Platform\AGTec.Platform.csproj" />
+  </ItemGroup>
+</Project>

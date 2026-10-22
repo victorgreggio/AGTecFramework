@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-worker
+  labels:
+    {{- include "agtec.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ .Values.worker.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: worker
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        {{- include "agtec.labels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: worker
+          image: {{ include "agtec.image" (dict "Values" .Values "component" "agtec-reference-worker") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- include "agtec.env" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+      # Let Wolverine drain in-flight messages before the pod exits.
+      terminationGracePeriodSeconds: 30
+{{- if .Values.worker.keda.enabled }}
+---
+# KEDA scales the worker on RabbitMQ queue depth, to zero when idle.
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ .Release.Name }}-worker
+  labels:
+    {{- include "agtec.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    name: {{ .Release.Name }}-worker
+  minReplicaCount: {{ .Values.worker.keda.minReplicas }}
+  maxReplicaCount: {{ .Values.worker.keda.maxReplicas }}
+  triggers:
+    - type: rabbitmq
+      metadata:
+        protocol: amqp
+        queueName: {{ .Values.worker.keda.queueName }}
+        mode: QueueLength
+        value: {{ .Values.worker.keda.queueLength | quote }}
+      authenticationRef:
+        name: {{ .Release.Name }}-worker-rabbitmq
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ .Release.Name }}-worker-rabbitmq
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: {{ .Values.worker.keda.triggerAuthSecret }}
+      key: ConnectionStrings__messaging
+{{- end }}

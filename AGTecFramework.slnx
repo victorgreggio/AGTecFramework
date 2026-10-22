@@ -1,0 +1,50 @@
+<Solution>
+  <Folder Name="/samples/" />
+  <Folder Name="/samples/AGTec.Reference/">
+    <Project Path="samples/AGTec.Reference/AGTec.Reference.Advisory/AGTec.Reference.Advisory.csproj" />
+    <Project Path="samples/AGTec.Reference/AGTec.Reference.Api/AGTec.Reference.Api.csproj" />
+    <Project Path="samples/AGTec.Reference/AGTec.Reference.AppHost/AGTec.Reference.AppHost.csproj" />
+    <Project Path="samples/AGTec.Reference/AGTec.Reference.Application/AGTec.Reference.Application.csproj" />
+    <Project Path="samples/AGTec.Reference/AGTec.Reference.Domain/AGTec.Reference.Domain.csproj" />
+    <Project Path="samples/AGTec.Reference/AGTec.Reference.Grpc.Contracts/AGTec.Reference.Grpc.Contracts.csproj" />
+    <Project Path="samples/AGTec.Reference/AGTec.Reference.Infrastructure/AGTec.Reference.Infrastructure.csproj" />
+    <Project Path="samples/AGTec.Reference/AGTec.Reference.Worker/AGTec.Reference.Worker.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/AGTec.Ai.OpenAI/AGTec.Ai.OpenAI.csproj" />
+    <Project Path="src/AGTec.Ai/AGTec.Ai.csproj" />
+    <Project Path="src/AGTec.Analyzers/AGTec.Analyzers.csproj" />
+    <Project Path="src/AGTec.Api/AGTec.Api.csproj" />
+    <Project Path="src/AGTec.Application/AGTec.Application.csproj" />
+    <Project Path="src/AGTec.Content.Local/AGTec.Content.Local.csproj" />
+    <Project Path="src/AGTec.Content/AGTec.Content.csproj" />
+    <Project Path="src/AGTec.Domain/AGTec.Domain.csproj" />
+    <Project Path="src/AGTec.FeatureManagement.Azure/AGTec.FeatureManagement.Azure.csproj" />
+    <Project Path="src/AGTec.FeatureManagement/AGTec.FeatureManagement.csproj" />
+    <Project Path="src/AGTec.Grpc/AGTec.Grpc.csproj" />
+    <Project Path="src/AGTec.Messaging/AGTec.Messaging.csproj" />
+    <Project Path="src/AGTec.Platform.Azure/AGTec.Platform.Azure.csproj" />
+    <Project Path="src/AGTec.Platform.ClamAv/AGTec.Platform.ClamAv.csproj" />
+    <Project Path="src/AGTec.Platform.Dapr/AGTec.Platform.Dapr.csproj" />
+    <Project Path="src/AGTec.Platform/AGTec.Platform.csproj" />
+    <Project Path="src/AGTec.Security/AGTec.Security.csproj" />
+    <Project Path="src/AGTec.ServiceDefaults/AGTec.ServiceDefaults.csproj" />
+    <Project Path="src/AGTec.Tenancy/AGTec.Tenancy.csproj" />
+    <Project Path="src/AGTec.VectorData.PgVector/AGTec.VectorData.PgVector.csproj" />
+    <Project Path="src/AGTec.VectorData/AGTec.VectorData.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AGTec.Ai.Tests/AGTec.Ai.Tests.csproj" />
+    <Project Path="tests/AGTec.Analyzers.Test/AGTec.Analyzers.Test.csproj" />
+    <Project Path="tests/AGTec.ArchitectureTests/AGTec.ArchitectureTests.csproj" />
+    <Project Path="tests/AGTec.Content.Tests/AGTec.Content.Tests.csproj" />
+    <Project Path="tests/AGTec.FeatureManagement.Tests/AGTec.FeatureManagement.Tests.csproj" />
+    <Project Path="tests/AGTec.Platform.Tests/AGTec.Platform.Tests.csproj" />
+    <Project Path="tests/AGTec.Reference.Grpc.Tests/AGTec.Reference.Grpc.Tests.csproj" />
+    <Project Path="tests/AGTec.Reference.IntegrationTests/AGTec.Reference.IntegrationTests.csproj" />
+    <Project Path="tests/AGTec.Reference.UnitTests/AGTec.Reference.UnitTests.csproj" />
+    <Project Path="tests/AGTec.Security.Tests/AGTec.Security.Tests.csproj" />
+    <Project Path="tests/AGTec.Tenancy.Tests/AGTec.Tenancy.Tests.csproj" />
+    <Project Path="tests/AGTec.VectorData.Tests/AGTec.VectorData.Tests.csproj" />
+  </Folder>
+</Solution>

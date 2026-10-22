@@ -1,0 +1,20 @@
+# Local observability for a AGTec stack: a standalone .NET Aspire Dashboard that receives OTLP (traces,
+# structured logs, metrics) from every service and renders them — no Azure, no account, one container.
+#
+# Merge it into your stack with an extra -f, or paste the service into your compose file:
+#   docker compose -f docker-compose.yml -f templates/agtec-observability/docker-compose.observability.yml up
+#
+# Then point each AGTec service at the collector by setting these on the service (see the README):
+#   OTEL_EXPORTER_OTLP_ENDPOINT: "http://aspire-dashboard:18889"
+#   OTEL_SERVICE_NAME: "<service-name>"
+# AGTec.ServiceDefaults registers the OTLP exporter automatically when OTEL_EXPORTER_OTLP_ENDPOINT is set,
+# and already traces Wolverine + Marten + Npgsql, so you get end-to-end traces (publisher → outbox →
+# consumer, down to the SQL) out of the box.
+
+services:
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.0
+    environment:
+      DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: "true"   # dev only — no login
+    ports:
+      - "18888:18888"   # web UI (open http://localhost:18888). OTLP ingest is on 18889 inside the network.

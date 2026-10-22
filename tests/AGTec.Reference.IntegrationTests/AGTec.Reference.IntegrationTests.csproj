@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Elastic.Clients.Elasticsearch" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <!-- Security override: pins SSH.NET above the vulnerable version Testcontainers pulls transitively (NU1903). -->
+    <PackageReference Include="SSH.NET" />
+    <PackageReference Include="Testcontainers.Elasticsearch" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Testcontainers.RabbitMq" />
+    <PackageReference Include="Marten" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\samples\AGTec.Reference\AGTec.Reference.Infrastructure\AGTec.Reference.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\samples\AGTec.Reference\AGTec.Reference.Worker\AGTec.Reference.Worker.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>

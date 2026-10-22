@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\AGTec.Domain\AGTec.Domain.csproj" />
+    <!-- AGTec.Analyzers runs the domain conventions (AGTEC0001) at compile time. -->
+    <ProjectReference
+      Include="..\..\..\src\AGTec.Analyzers\AGTec.Analyzers.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+    />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>

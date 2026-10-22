@@ -1,0 +1,52 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.{cs,csx}]
+indent_size = 4
+# Prefer file-scoped namespaces, var where the type is apparent, and expression bodies.
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_var_when_type_is_apparent = true:suggestion
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+# Nullable / modern language usage
+dotnet_diagnostic.CA2007.severity = none      # no ConfigureAwait(false) requirement in app code
+csharp_style_prefer_primary_constructors = true:suggestion
+
+# --- Curated analyzer gate (correctness rules promoted to errors) ---
+# Formatting is owned by CSharpier, so the Style category is informational only.
+dotnet_analyzer_diagnostic.category-Style.severity = none
+# Usage / reliability
+dotnet_diagnostic.CA2200.severity = error      # rethrow to preserve stack details
+dotnet_diagnostic.CA2213.severity = error      # disposable fields should be disposed
+dotnet_diagnostic.CA2215.severity = error      # Dispose should call base.Dispose
+dotnet_diagnostic.CA2216.severity = error      # disposable types should declare finalizer correctly
+dotnet_diagnostic.CA2251.severity = error      # use String.Equals over ==(string, string) when cultured
+# Design / performance
+dotnet_diagnostic.CA1001.severity = error      # types owning disposables should be disposable
+dotnet_diagnostic.CA1016.severity = error      # mark assemblies with AssemblyVersion
+dotnet_diagnostic.CA1069.severity = error      # no duplicated enum values
+dotnet_diagnostic.CA1507.severity = error      # use nameof instead of string literals
+dotnet_diagnostic.CA1816.severity = error      # call GC.SuppressFinalize correctly
+dotnet_diagnostic.CA1825.severity = error      # avoid zero-length array allocations
+dotnet_diagnostic.CA1827.severity = error      # use Any() instead of Count() > 0
+dotnet_diagnostic.CA1829.severity = error      # use Length/Count over Count()
+dotnet_diagnostic.CA1841.severity = error      # prefer Dictionary.Contains methods
+# AGTecFramework custom analyzers
+dotnet_diagnostic.AGTEC0001.severity = warning  # entities should not have public setters
+
+[*.{csproj,props,targets}]
+indent_size = 2
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOTNET_NOLOGO: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+  HUSKY: "0"   # don't install git hooks on CI agents
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore tools (CSharpier, Husky)
+        run: dotnet tool restore
+
+      - name: Restore
+        run: dotnet restore
+
+      # Formatting is a gate: the build fails if anything isn't CSharpier-clean.
+      - name: Format check (CSharpier)
+        run: dotnet csharpier check .
+
+      - name: Build (warnings as errors)
+        run: dotnet build --no-restore -c Release -p:ContinuousIntegrationBuild=true
+
+      - name: NuGet vulnerability audit
+        run: |
+          dotnet list package --vulnerable --include-transitive 2>&1 | tee audit.txt
+          if grep -q "has the following vulnerable packages" audit.txt; then
+            echo "::error::Vulnerable NuGet packages detected."
+            exit 1
+          fi
+
+      - name: Test
+        run: dotnet test --no-build -c Release --verbosity normal

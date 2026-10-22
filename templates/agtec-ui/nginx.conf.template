@@ -1,0 +1,46 @@
+# nginx serves a static SPA bundle and reverse-proxies the API, so the API is never exposed directly and
+# the browser talks to a single origin (no CORS). Placeholders are substituted at container start by
+# docker-entrypoint.sh: ${WEB_UI_PORT}, ${API_UPSTREAM}.
+
+server {
+    listen       ${WEB_UI_PORT};
+    server_name  _;
+    root         /usr/share/nginx/html;
+    index        index.html;
+
+    # Resolve upstream hostnames via Docker's embedded DNS at REQUEST time (not config-load time), so nginx
+    # never aborts with "host not found in upstream" if the API isn't resolvable the instant nginx starts.
+    resolver 127.0.0.11 valid=10s ipv6=off;
+
+    # Hide the API behind /_api; strip the prefix, then forward. Using a variable in proxy_pass forces the
+    # lazy resolution above (a literal host would be resolved once at startup and hard-fail if unavailable).
+    location /_api/ {
+        set                $api_upstream "${API_UPSTREAM}";
+        rewrite            ^/_api/(.*)$ /$1 break;
+        proxy_pass         $api_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host $host;
+
+        # Server-Sent Events (streaming endpoints): no buffering, long read timeout, keep the connection open.
+        proxy_buffering    off;
+        proxy_cache        off;
+        proxy_read_timeout 3600s;
+        proxy_set_header   Connection '';
+        chunked_transfer_encoding on;
+
+        client_max_body_size 64m;
+    }
+
+    # SPA: serve static assets, fall back to index.html for client-side routes.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Never cache the app shell so a new deploy is picked up immediately.
+    location = /index.html {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+}

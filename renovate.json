@@ -1,0 +1,63 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits"
+  ],
+  "timezone": "America/Vancouver",
+  "schedule": [
+    "before 9am on monday"
+  ],
+  "nuget": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "description": "Group the Microsoft.Extensions / ASP.NET Core runtime packages",
+      "matchPackagePatterns": [
+        "^Microsoft\\.Extensions\\.",
+        "^Microsoft\\.AspNetCore\\."
+      ],
+      "groupName": "Microsoft.Extensions & ASP.NET Core"
+    },
+    {
+      "description": "Group the critical stack (Wolverine / Marten)",
+      "matchPackagePrefixes": [
+        "WolverineFx",
+        "Marten"
+      ],
+      "groupName": "Wolverine & Marten"
+    },
+    {
+      "description": "Group OpenTelemetry packages",
+      "matchPackagePrefixes": [
+        "OpenTelemetry"
+      ],
+      "groupName": "OpenTelemetry"
+    },
+    {
+      "description": "Group test dependencies",
+      "matchPackagePrefixes": [
+        "xunit",
+        "Testcontainers",
+        "Microsoft.NET.Test",
+        "AwesomeAssertions"
+      ],
+      "groupName": "test dependencies"
+    },
+    {
+      "description": "Major bumps need explicit approval from the dependency dashboard",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security"
+    ]
+  },
+  "osvVulnerabilityAlerts": true
+}

@@ -1,0 +1,51 @@
+# .NET build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+build_output/
+publish/
+*.user
+*.suo
+*.userprefs
+
+# Rider / VS / VS Code
+.idea/
+.vs/
+.vscode/
+*.DotSettings.user
+
+# Test / coverage
+[Tt]est[Rr]esult*/
+coverage*.json
+coverage*.xml
+coverage*.cobertura.xml
+*.trx
+*.coverage
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+!**/packages/build/
+
+# Aspire / local
+*.received.*
+.aspire/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / local config (never commit)
+*.env
+appsettings.*.local.json
+secrets.json
+
+# Husky.Net generated hook shim
+.husky/_/

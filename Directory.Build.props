@@ -1,0 +1,33 @@
+<Project>
+  <!--
+    Shared build settings for every project in the repository.
+    Per-project csproj files stay minimal; conventions live here.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Package metadata for the AGTec.* NuGet packages. Bump VersionPrefix per release. -->
+    <VersionPrefix>0.1.4</VersionPrefix>
+    <Authors>AGTecFramework</Authors>
+    <Company>AGTecFramework</Company>
+    <Product>AGTecFramework</Product>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Warnings are errors in CI only, so local iteration stays fast. -->
+    <TreatWarningsAsErrors Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</TreatWarningsAsErrors>
+    <!-- CS1591: missing XML doc on public members — noise while sketching. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <!-- Any packable project that ships a README.md next to its csproj embeds it in the
+       NuGet package (renders on the package page; the primary doc for consumers). -->
+  <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)/README.md')">
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)/README.md')">
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

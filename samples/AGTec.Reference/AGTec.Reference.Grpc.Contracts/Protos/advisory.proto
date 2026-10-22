@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "AGTec.Reference.Grpc.Contracts";
+
+package advisory.v1;
+
+// Internal, synchronous domain capability: given conditions, return human advice.
+// This is the kind of call that is better done sync (gRPC) than via async events.
+service AdvisoryService {
+  rpc GetAdvisory (AdvisoryRequest) returns (AdvisoryReply);
+}
+
+message AdvisoryRequest {
+  int32 celsius = 1;
+}
+
+message AdvisoryReply {
+  string advice = 1;
+}

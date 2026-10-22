@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- TargetFramework / Nullable / ImplicitUsings come from Directory.Build.props -->
+    <IsPackable>true</IsPackable>
+    <Description>AGTecFramework domain primitives: Entity, AggregateRoot, and domain-event building blocks. Zero dependencies.</Description>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-advisory
+  labels:
+    {{- include "agtec.labels" . | nindent 4 }}
+    app.kubernetes.io/component: advisory
+spec:
+  replicas: {{ .Values.advisory.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: advisory
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        {{- include "agtec.labels" . | nindent 8 }}
+        app.kubernetes.io/component: advisory
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: advisory
+          image: {{ include "agtec.image" (dict "Values" .Values "component" "agtec-reference-advisory") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: grpc
+              containerPort: 8080
+          env:
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.otlpEndpoint | quote }}
+          # Kestrel serves HTTP/1.1 (probes) and HTTP/2 (gRPC) on the same cleartext port.
+          livenessProbe:
+            httpGet: { path: /alive, port: 8080 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health, port: 8080 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.advisory.resources | nindent 12 }}
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-advisory
+  labels:
+    {{- include "agtec.labels" . | nindent 4 }}
+    app.kubernetes.io/component: advisory
+  # gRPC is HTTP/2; with an HTTP ingress/mesh in front, mark the backend protocol accordingly.
+spec:
+  selector:
+    app.kubernetes.io/component: advisory
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: grpc
+      port: 80
+      targetPort: 8080
+      appProtocol: kubernetes.io/h2c

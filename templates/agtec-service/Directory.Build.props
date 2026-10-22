@@ -1,0 +1,29 @@
+<Project>
+  <!-- Conventions inherited from AGTecFramework. -->
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <!-- Warnings are errors in CI only, so local iteration stays fast. -->
+    <TreatWarningsAsErrors Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Install the CSharpier pre-commit hook on first local build (skipped in CI via HUSKY=0). -->
+  <Target Name="HuskyInstall" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != '0'">
+    <Exec
+      Command="dotnet tool restore"
+      StandardOutputImportance="Low"
+      StandardErrorImportance="High"
+      ContinueOnError="true"
+    />
+    <Exec
+      Command="dotnet husky install"
+      WorkingDirectory="$(MSBuildProjectDirectory)"
+      StandardOutputImportance="Low"
+      StandardErrorImportance="High"
+      ContinueOnError="true"
+    />
+  </Target>
+</Project>
