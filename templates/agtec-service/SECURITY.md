@@ -15,4 +15,4 @@ risk are caught at three levels.
 ## Reporting a vulnerability
 
 Do not open a public issue for a suspected vulnerability. Report it through the
-internal Copperleaf security channel.
+private security channel shared by the project maintainers.

@@ -1,6 +1,6 @@
 name: Mend Security Scan
 
-# Mend SCA (dependencies) + SAST (code), modeled on Copperleaf's Core Suite scan.
+# Mend SCA (dependencies) + SAST (code).
 # Runs weekly and on demand. Set MEND_* as repository or organization secrets.
 
 on:

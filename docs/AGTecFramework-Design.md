@@ -5,7 +5,7 @@
 > **Author:** Victor Greggio (draft prepared with Claude Code)
 
 AGTecFramework is a modern, opinionated foundation for building enterprise
-microservices at Copperleaf. It keeps the patterns that make systems maintainable
+microservices. It keeps the patterns that make systems maintainable
 — CQRS, Domain-Driven Design, Clean Architecture, event-driven microservices — and
 deliberately **challenges every piece of custom infrastructure** against mature,
 well-maintained libraries, so that we own our *architecture and conventions*, not a
@@ -89,7 +89,7 @@ Concretely, AGTecFramework should give us:
 ### Non-goals
 
 - Not a general-purpose, "framework for everyone" product. It is opinionated *for
-  Copperleaf*.
+  enterprise microservices*.
 - Not a lowest-common-denominator abstraction over every database/broker. We pick
   defaults and support deviation, not infinite pluggability.
 - Not event sourcing everywhere. Event sourcing is an option for specific bounded
@@ -326,7 +326,7 @@ project. Our decision rule:
 ### 5.1 The 2025 licensing shift (why this is urgent now)
 
 Several libraries that a .NET team would reflexively reach for went **commercial
-in 2025**. This is decisive for an enterprise like Copperleaf, which will almost
+in 2025**. This is decisive for enterprise teams, which will almost
 certainly exceed the free "Community" revenue thresholds:
 
 | Library | Change | Free fallback |

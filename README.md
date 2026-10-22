@@ -1,7 +1,7 @@
 # AGTecFramework
 
-An opinionated, modern foundation for building enterprise microservices at
-Copperleaf on **.NET 10 / C# 14**. AGTecFramework keeps the good ideas — CQRS,
+An opinionated, modern foundation for building enterprise microservices on
+**.NET 10 / C# 14**. AGTecFramework keeps the good ideas — CQRS,
 Domain-Driven Design, Clean Architecture, event-driven microservices — and
 replaces hand-rolled plumbing with mature, well-licensed ecosystem libraries.
 
@@ -163,8 +163,6 @@ dotnet new agtec-service -n Acme.Weather
 ```
 
 ## Development & conventions
-
-Adopted from Copperleaf's existing products (Core Suite / Strategy):
 
 ```bash
 dotnet tool restore     # CSharpier + Husky.Net (pinned in .config/dotnet-tools.json)

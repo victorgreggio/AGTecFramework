@@ -1,7 +1,7 @@
 # Security
 
-AGTecFramework follows Copperleaf's standard security posture. Vulnerabilities and
-license risk are caught at three levels, from fastest/cheapest to deepest.
+AGTecFramework uses a defense-in-depth security posture. Vulnerabilities and license
+risk are caught at three levels, from fastest/cheapest to deepest.
 
 ## 1. NuGet vulnerability audit (every build)
 
@@ -37,4 +37,4 @@ Credentials come from GitHub secrets (`MEND_URL`, `MEND_EMAIL`, `MEND_USER_KEY`,
 ## Reporting a vulnerability
 
 Do not open a public issue for a suspected vulnerability. Report it through the
-internal Copperleaf security channel.
+private security channel shared by the project maintainers.

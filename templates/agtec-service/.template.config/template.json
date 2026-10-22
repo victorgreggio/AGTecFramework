@@ -1,6 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/template",
-  "author": "Copperleaf",
+  "author": "AGTecFramework",
   "classifications": [ "Web", "WebAPI", "Microservice", "AGTec" ],
   "identity": "AGTec.Service.CSharp",
   "name": "AGTecFramework Service",
