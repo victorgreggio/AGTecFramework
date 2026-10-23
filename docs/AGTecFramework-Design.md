@@ -21,9 +21,9 @@ The full decision log — all resolved — is in [§14](#14-open-decisions).
   and broker transport. Directly fixes the lost-event gap. ([§6.1](#61-cqrs), [§6.2](#62-messaging))
 - **Primary broker → Azure Service Bus**, consistent with an Azure-leaning infra
   direction — but **pluggable** (Kafka / RabbitMQ) and selected by configuration.
-- **Write + document + event store → [Marten](https://martendb.io/) on PostgreSQL**:
-  one engine for the write model, document read models, and optional event sourcing;
-  pairs natively with Wolverine's outbox. ([§6.4](#64-persistence))
+- **Relational aggregates + transactions → EF Core + PostgreSQL**; **document models
+  and optional event sourcing → [Marten](https://martendb.io/) on PostgreSQL**.
+  Wolverine's PostgreSQL outbox joins the relational transaction. ([§6.4](#64-persistence))
 - **Search read model → Elasticsearch / OpenSearch** (self-hostable, portable).
   ([§6.4](#64-persistence))
 - **HTTP edge → Minimal APIs** as the single standard; REST at the edge only.
@@ -271,7 +271,7 @@ etc. The only things that touch a cloud SDK are the **adapter** packages. ([§8]
                                       │ REST at the edge
                          ┌────────────▼────────────┐
                          │   Service A: WebApi       │  writes via commands
-                         │   (PostgreSQL + Marten)   │  → Outbox → broker
+                         │ (PostgreSQL + EF Core)    │  → Outbox → broker
                          └───────┬────────┬─────────┘
                   gRPC (sync,    │        │  publishes integration events
                   when required) │        ▼
@@ -453,34 +453,34 @@ and the domain-event pattern.
 
 ### 6.4 Persistence <a id="64-persistence"></a>
 
-**Decision: standardize on PostgreSQL, with [Marten](https://martendb.io/) (JasperFx,
-MIT) as the document + event store.** Marten + Wolverine is the "critical stack":
-one Postgres engine serves the write model, document read models, the transactional
-outbox, and optional event sourcing — a large reduction in moving parts.
+**Decision: standardize on PostgreSQL, with EF Core + Npgsql as the relational
+baseline and [Marten](https://martendb.io/) (JasperFx, MIT) for document storage and
+event sourcing where those models fit.** One PostgreSQL engine serves relational
+aggregates, document projections, the transactional outbox, and optional event
+sourcing without making the document database the default.
 
-- **Write side:** aggregates persisted via Marten's session (its document session
-  *is* the unit of work) or EF Core where a relational schema fits better. A
-  **repository per aggregate root** exposes intention-revealing methods returning
-  **domain objects** (not `IQueryable`). Wolverine's transaction middleware commits
-  once per command and flushes the outbox in the same transaction.
+- **Write side:** relational aggregates persist through EF Core's `DbContext` (the
+  unit of work). A **repository per aggregate root** exposes intention-revealing
+  methods returning **domain objects** (not `IQueryable`). Wolverine's EF Core
+  transaction middleware and PostgreSQL outbox commit once per command. Marten is
+  selected only for a document-shaped aggregate or an event-sourced bounded context.
 - **Event sourcing (optional, per context):** Marten provides it natively where a
   bounded context benefits (full audit, temporal queries, projections). Not a global
   mandate — most contexts stay state-based.
-- **Read side (CQRS):** thin read models populated by projectors —
-  **Marten documents/projections** for the default document read model, **Dapper**
-  for hot relational read paths.
+- **Read side (CQRS):** thin read models populated by projectors — Marten documents
+  where a flexible document projection helps, EF Core/Dapper for relational read paths.
 - **Search read model → Elasticsearch / OpenSearch**, fed by the projector; chosen
   for portability (self-hostable on AKS or managed) and relevance features.
-- **Outbox** lives in the same Postgres database as the write model for
-  transactional consistency (Marten-backed).
+- **Outbox** lives in the same Postgres database and transaction as the EF Core write
+  model for transactional consistency.
 - **Relational engine = PostgreSQL** for cloud portability (runs identically on
   Azure Database for PostgreSQL and self-hosted). See the portability caveat in
   [§8.4](#84-caveats).
 - **MongoDB remains an *alternative* document adapter** behind the read-model port
   for a context that specifically needs it — not the default.
-- **Schema/migrations:** Marten manages its own schema (dev auto-create, production
-  migration scripts); EF Core migrations where EF is used. Run as an explicit
-  startup/CI step (Aspire can gate service start on DB readiness).
+- **Schema/migrations:** apply EF Core migrations explicitly for relational schemas.
+  Marten manages its own document/event schema where it is deliberately used. Run
+  both as an explicit startup/CI step (Aspire can gate service start on DB readiness).
 
 ### 6.5 Validation & mapping
 
@@ -638,7 +638,7 @@ Two levels — **decision: we target Level 1.**
 | Object / blob storage | `IObjectStore` (AGTec) | **Azure Blob Storage** | AWS S3, GCS, MinIO (S3-compatible) | Stream-based, SAS/URL helpers behind the port |
 | Distributed cache | `IDistributedCache` (MS) | **Azure Cache for Redis** | Redis/Valkey anywhere, in-memory | Already a standard abstraction |
 | Relational database | EF Core `DbContext` | **Azure Database for PostgreSQL** | PostgreSQL anywhere; other EF providers | *Partial* portability — see [§8.4](#84-caveats) |
-| Document / event store | Marten (PostgreSQL) | **Azure Database for PostgreSQL** (+ Marten) | PostgreSQL anywhere; MongoDB adapter if a context needs it | Default store; same engine as the write model |
+| Document / event store | Marten (PostgreSQL) | **Azure Database for PostgreSQL** (+ Marten) | PostgreSQL anywhere; MongoDB adapter if a context needs it | Deliberate fit for document projections or event-sourced contexts |
 | Search | read-model port | **Elasticsearch / OpenSearch** (self-hosted on AKS or Elastic Cloud) | Azure AI Search, OpenSearch anywhere | Fed by projector; default is portable ES/OpenSearch |
 | Identity | OIDC / JWT; `ICurrentUser` | **Microsoft Entra ID** | Keycloak, Duende, Auth0 — any OIDC IdP | Standard OIDC ⇒ portable |
 | Telemetry sink | OpenTelemetry (OTLP) | **Azure Monitor / App Insights** | Grafana/Tempo/Prometheus, Jaeger, Datadog | Exporter is a config choice |
@@ -743,8 +743,8 @@ with and selects the active one by configuration ([§8](#8-cloud-strategy)).
 | `AGTec.Application` | CQRS abstractions, pipeline behaviors (validation, logging, transaction, idempotency), use-case conventions (over Wolverine). |
 | `AGTec.Abstractions` | Provider-neutral **ports**: `ISecretStore`, `IObjectStore`, `INotificationSender`, `ICurrentUser`, etc. No SDK references. |
 | `AGTec.Messaging` | Integration-event contract conventions, outbox config, and config-driven transport selection over Wolverine. |
-| `AGTec.Persistence.Marten` | Marten/PostgreSQL conventions: aggregate sessions, document read models, outbox wiring, optional event sourcing, migration hooks. **Default store.** |
-| `AGTec.Persistence.EfCore` | EF Core `DbContext` conventions, audit interceptor, repository-per-aggregate base — for contexts that prefer a relational schema. |
+| `AGTec.Persistence.EntityFrameworkCore` | EF Core + Npgsql/PostgreSQL conventions for relational aggregates, transactions, and migrations. **Default for relational data.** |
+| `AGTec.Persistence.Marten` *(future optional adapter)* | Marten/PostgreSQL conventions for document projections and event-sourced contexts. |
 | `AGTec.ReadModel` | Projector conventions for Elasticsearch/OpenSearch (search) and Marten document read models. |
 | `AGTec.Grpc` | gRPC server/client conventions, resilience, interceptors (telemetry, auth). |
 | `AGTec.Api` | Minimal-API endpoint conventions, Problem Details, versioning, OpenAPI. |
@@ -827,7 +827,7 @@ bets:
 |-------|------|--------------|
 | **0 — Decisions** | ✅ Done | Foundational decisions locked ([§14](#14-open-decisions)); layering, stack, cloud posture, and naming agreed |
 | **1 — Foundations** | Reusable platform bits | `AGTec.ServiceDefaults`, `AGTec.Security`, `AGTec.Domain`, `AGTec.Application` (Wolverine + behaviors), `AGTec.Abstractions`, CPM + analyzers |
-| **2 — Messaging & persistence** | Reliable integration | `AGTec.Messaging` + outbox/inbox/DLQ with Azure Service Bus + RabbitMQ adapters, `AGTec.Persistence.EfCore`, read-model projector, idempotent consumers |
+| **2 — Messaging & persistence** | Reliable integration | `AGTec.Messaging` + outbox/inbox/DLQ with Azure Service Bus + RabbitMQ adapters, `AGTec.Persistence.EntityFrameworkCore`, read-model projector, idempotent consumers |
 | **3 — Reference app** | Prove it end-to-end | `AGTec.Reference` sample on AGTec, Aspire AppHost, gRPC internal-call sample, Testcontainers integration tests, config-driven provider swap demo |
 | **4 — Edge & comms** | Standardize interfaces | `AGTec.Api` (Minimal APIs, Problem Details, OpenAPI/Scalar), `AGTec.Grpc`, YARP gateway conventions |
 | **5 — DX & templates** | Make it the default | `dotnet new` templates, CI/CD templates, ADRs, docs, internal NuGet feed |
@@ -849,7 +849,7 @@ so the roadmap can proceed; changes go through an ADR.
 | 3 | Cloud posture | **Azure-first, not Azure-only** — ports + config-selected adapters | [§8](#8-cloud-strategy) |
 | 4 | Portability depth | **Level 1** — config change + restart, no recompile; Level 2 (hot-swap) out of scope | [§8.2](#82-runtime) |
 | 5 | Deployment | **OCI containers on Kubernetes (AKS default)**, portable to any CNCF cluster | [§8.5](#85-deployment) |
-| 6 | Write + document + event store | **Marten on PostgreSQL** (one engine; optional event sourcing); MongoDB non-default alternative | [§6.4](#64-persistence) |
+| 6 | Persistence | **EF Core + PostgreSQL** for relational aggregates and transactions; **Marten** for document/event-sourced models; MongoDB non-default alternative | [§6.4](#64-persistence) |
 | 7 | Search read model | **Elasticsearch / OpenSearch** (portable); Azure AI Search as an alternative adapter | [§6.4](#64-persistence) |
 | 8 | HTTP edge style | **Minimal APIs** as the single standard; REST at the edge only | [§6.7](#67-api-edge) |
 | 9 | Sync service-to-service | **gRPC** (contract-first); async events the default | [§7](#7-service-to-service-communication) |

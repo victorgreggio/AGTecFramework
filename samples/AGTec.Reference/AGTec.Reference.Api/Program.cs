@@ -21,7 +21,7 @@ builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 // Internal synchronous call via gRPC (address resolved by service discovery).
 builder.Services.AddAGTecGrpcClient<AdvisoryService.AdvisoryServiceClient>("http://advisory");
 
-// Marten + Wolverine (mediator + transactional outbox). This host publishes integration
+// EF Core/PostgreSQL + Wolverine (mediator + transactional outbox). This host publishes integration
 // events; the transport (RabbitMQ / Azure Service Bus) is selected by configuration.
 builder.AddReferencePlatform(MessagingRole.Publisher);
 

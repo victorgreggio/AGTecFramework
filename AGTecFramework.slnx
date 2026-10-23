@@ -27,6 +27,7 @@
     <Project Path="src/AGTec.Platform.ClamAv/AGTec.Platform.ClamAv.csproj" />
     <Project Path="src/AGTec.Platform.Dapr/AGTec.Platform.Dapr.csproj" />
     <Project Path="src/AGTec.Platform/AGTec.Platform.csproj" />
+    <Project Path="src/AGTec.Persistence.EntityFrameworkCore/AGTec.Persistence.EntityFrameworkCore.csproj" />
     <Project Path="src/AGTec.Security/AGTec.Security.csproj" />
     <Project Path="src/AGTec.ServiceDefaults/AGTec.ServiceDefaults.csproj" />
     <Project Path="src/AGTec.Tenancy/AGTec.Tenancy.csproj" />
@@ -40,6 +41,7 @@
     <Project Path="tests/AGTec.Content.Tests/AGTec.Content.Tests.csproj" />
     <Project Path="tests/AGTec.FeatureManagement.Tests/AGTec.FeatureManagement.Tests.csproj" />
     <Project Path="tests/AGTec.Platform.Tests/AGTec.Platform.Tests.csproj" />
+    <Project Path="tests/AGTec.Persistence.EntityFrameworkCore.Tests/AGTec.Persistence.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/AGTec.Reference.Grpc.Tests/AGTec.Reference.Grpc.Tests.csproj" />
     <Project Path="tests/AGTec.Reference.IntegrationTests/AGTec.Reference.IntegrationTests.csproj" />
     <Project Path="tests/AGTec.Reference.UnitTests/AGTec.Reference.UnitTests.csproj" />

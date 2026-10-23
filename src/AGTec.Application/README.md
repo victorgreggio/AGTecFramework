@@ -2,8 +2,9 @@
 
 CQRS message contracts (`ICommand`, `ICommand<TResult>`, `IQuery<TResult>`) and AGTecFramework's
 standard [Wolverine](https://wolverinefx.net) application pipeline: automatic FluentValidation and
-structured, timed request logging on every handled message. Persistence-agnostic — Marten
-transactions and the outbox are added by the persistence layer.
+structured, timed request logging on every handled message. Persistence-agnostic — EF
+Core/PostgreSQL transactions and the outbox, or a deliberate Marten document/event
+store integration, are added by the persistence layer.
 
 Part of [AGTecFramework](https://www.nuget.org/packages?q=AGTecFramework).
 

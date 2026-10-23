@@ -3,6 +3,7 @@
     <ProjectReference Include="..\AGTec.Reference.Application\AGTec.Reference.Application.csproj" />
     <ProjectReference Include="..\AGTec.Reference.Domain\AGTec.Reference.Domain.csproj" />
     <ProjectReference Include="..\..\..\src\AGTec.Messaging\AGTec.Messaging.csproj" />
+    <ProjectReference Include="..\..\..\src\AGTec.Persistence.EntityFrameworkCore\AGTec.Persistence.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\..\src\AGTec.Platform\AGTec.Platform.csproj" />
     <ProjectReference Include="..\..\..\src\AGTec.Platform.Azure\AGTec.Platform.Azure.csproj" />
     <ProjectReference Include="..\..\..\src\AGTec.Platform.Dapr\AGTec.Platform.Dapr.csproj" />
@@ -13,10 +14,13 @@
     <PackageReference Include="Elastic.Clients.Elasticsearch" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="Marten" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="WolverineFx.AzureServiceBus" />
     <PackageReference Include="WolverineFx.Marten" />
+    <PackageReference Include="WolverineFx.EntityFrameworkCore" />
+    <PackageReference Include="WolverineFx.Postgresql" />
     <PackageReference Include="WolverineFx.RabbitMQ" />
     <PackageReference Include="WolverineFx.RuntimeCompilation" />
   </ItemGroup>

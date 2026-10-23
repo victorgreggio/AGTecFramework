@@ -22,10 +22,11 @@ dotnet add package AGTec.ServiceDefaults
   `AddAGTecServiceDefaults()`, exposed for hosts that want to compose them individually.
 - `MapAGTecDefaultEndpoints()` — on a `WebApplication`, maps `/alive` (liveness) and `/health` (readiness).
 
-Tracing captures ASP.NET Core and `HttpClient` (gRPC rides on this) plus the `Wolverine`, `Marten`,
-`Npgsql`, and `AGTec.Ai` activity sources — so messaging, persistence, SQL, and AI-chat spans are included,
-and Wolverine propagates the trace context across the outbox, linking a publisher's request to the
-consuming handler.
+Tracing captures ASP.NET Core and `HttpClient` (gRPC rides on this) plus the `Wolverine`,
+`Microsoft.EntityFrameworkCore`, `Marten`, `Npgsql`, and `AGTec.Ai` activity sources — so
+messaging, relational/document persistence, SQL, and AI-chat spans are included, and
+Wolverine propagates the trace context across the outbox, linking a publisher's request
+to the consuming handler.
 
 ## Usage
 

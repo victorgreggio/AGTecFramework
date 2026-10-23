@@ -1,27 +1,32 @@
 using System.Globalization;
-using Elastic.Clients.Elasticsearch;
-using FluentValidation;
-using Marten;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using AGTec.Application;
+using AGTec.Persistence.EntityFrameworkCore;
 using AGTec.Platform;
 using AGTec.Platform.Azure;
 using AGTec.Platform.ClamAv;
 using AGTec.Platform.Dapr;
 using AGTec.Reference.Application;
+using Elastic.Clients.Elasticsearch;
+using FluentValidation;
+using Marten;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Wolverine;
+using Wolverine.EntityFrameworkCore;
 using Wolverine.Marten;
+using Wolverine.Postgresql;
 
 namespace AGTec.Reference.Infrastructure;
 
 /// <summary>
 /// Shared persistence + messaging wiring for the reference service. One method configures
-/// Marten (write model + document store + outbox) and Wolverine (mediator + pipeline +
-/// transactional outbox). The transport is chosen from configuration
-/// (<c>AGTec:Messaging:Provider</c>), so the API, Worker, and integration tests reuse the
-/// exact same core and the broker is swapped by config, not code (§8 portability).
+/// EF Core/PostgreSQL (relational write model) and Wolverine (mediator + pipeline +
+/// transactional outbox), while Marten is retained for the document projection. The
+/// transport is chosen from configuration (<c>AGTec:Messaging:Provider</c>), so the API,
+/// Worker, and integration tests reuse the exact same core and the broker is swapped by
+/// config, not code (§8 portability).
 /// </summary>
 public static class ReferencePlatform
 {
@@ -37,20 +42,20 @@ public static class ReferencePlatform
             builder.Configuration.GetConnectionString(ConnectionStringName)
             ?? "Host=localhost;Port=5432;Database=forecasts;Username=postgres;Password=postgres";
 
-        builder
-            .Services.AddMarten(options =>
-            {
-                options.Connection(connectionString);
-                options.DatabaseSchemaName = "forecasts";
-                // Marten's default (CreateOrUpdate) provisions missing objects on demand in
-                // dev/test; production uses explicit migrations instead.
-            })
-            // Marten stores the Wolverine outbox/inbox in the same database and transaction.
-            .IntegrateWithWolverine();
+        builder.Services.AddDbContextWithWolverineIntegration<ForecastDbContext>(
+            options => options.UseAGTecPostgreSql(connectionString),
+            connectionString
+        );
 
-        // Ports → Marten adapters.
-        builder.Services.AddScoped<IForecastRepository, MartenForecastRepository>();
-        builder.Services.AddScoped<IForecastReadStore, MartenForecastReadStore>();
+        builder.Services.AddMarten(options =>
+        {
+            options.Connection(connectionString);
+            options.DatabaseSchemaName = "forecasts";
+        });
+
+        // Ports → EF Core relational adapters.
+        builder.Services.AddScoped<IForecastRepository, EfCoreForecastRepository>();
+        builder.Services.AddScoped<IForecastReadStore, EfCoreForecastReadStore>();
 
         // Search read store, provider selected by config (InMemory default | Elasticsearch).
         AddForecastSearch(builder);
@@ -65,8 +70,10 @@ public static class ReferencePlatform
         {
             options.ApplyAGTecDefaults();
 
-            // Commit the Marten session + outbox once per message, automatically.
-            options.Policies.AutoApplyTransactions();
+            // Commit the EF Core aggregate and the PostgreSQL outbox in one transaction.
+            options.UseEntityFrameworkCoreTransactions();
+            options.UseEntityFrameworkCoreWolverineManagedMigrations();
+            options.PersistMessagesWithPostgresql(connectionString, "wolverine").Enroll<ForecastDbContext>();
 
             // Handlers live in the Application assembly, not the entry host.
             options.Discovery.IncludeAssembly(typeof(RegisterForecast).Assembly);

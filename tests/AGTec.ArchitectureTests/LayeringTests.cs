@@ -94,16 +94,24 @@ public class LayeringTests
     }
 
     [Fact]
-    public void Sanity_detector_sees_that_infrastructure_uses_marten()
+    public void Sanity_detector_sees_that_infrastructure_uses_ef_core_and_marten_for_their_intended_models()
     {
         // Guards against false positives: if the analyzer saw no dependencies at all, the
-        // rules above would pass vacuously. Infrastructure genuinely depends on Marten.
+        // rules above would pass vacuously. Relational aggregates use EF Core and the
+        // asynchronous document projection uses Marten.
+        var efCoreConsumers = Types
+            .InAssembly(typeof(AGTec.Reference.Infrastructure.ReferencePlatform).Assembly)
+            .That()
+            .HaveDependencyOn("Microsoft.EntityFrameworkCore")
+            .GetTypes();
+
         var martenConsumers = Types
             .InAssembly(typeof(AGTec.Reference.Infrastructure.ReferencePlatform).Assembly)
             .That()
             .HaveDependencyOn("Marten")
             .GetTypes();
 
+        efCoreConsumers.Should().NotBeEmpty();
         martenConsumers.Should().NotBeEmpty();
     }
 

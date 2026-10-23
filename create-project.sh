@@ -357,7 +357,8 @@ public static class AppPlatform
         AddPlatformServices(builder);
         AppAiExtensions.AddAppAi(builder);
 
-        // Application ports -> adapters. Replace the in-memory store with a real one (e.g. Marten).
+        // Application ports -> adapters. Replace the in-memory store with EF Core/PostgreSQL
+        // for relational aggregates, or Marten where a document/event-sourced model fits.
         builder.Services.AddSingleton<INoteStore, InMemoryNoteStore>();
 
         builder.UseWolverine(options =>
@@ -462,7 +463,7 @@ internal static class AppMessaging
                     .AutoProvision();
                 break;
             default:
-                // In-memory local mediator. Add Marten + UseDurableLocalQueues() for a durable outbox.
+                // In-memory local mediator. Add EF Core/PostgreSQL + a durable outbox for production.
                 break;
         }
     }
@@ -475,7 +476,8 @@ using __APP__.Application.Notes;
 
 namespace __APP__.Infrastructure;
 
-/// <summary>A demo tenant-partitioned store. Replace with a real adapter (e.g. Marten) for production.</summary>
+/// <summary>A demo tenant-partitioned store. Replace with EF Core/PostgreSQL for relational data,
+/// or Marten where a document/event-sourced model fits.</summary>
 internal sealed class InMemoryNoteStore : INoteStore
 {
     private readonly ConcurrentDictionary<string, List<NoteDto>> _byTenant = new();

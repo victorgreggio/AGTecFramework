@@ -25,8 +25,9 @@ layout, and a phased roadmap.
   lost-event gap.
 - **Broker:** Azure Service Bus by default, RabbitMQ locally, Kafka optional —
   selected by configuration.
-- **Data:** [Marten](https://martendb.io/) on PostgreSQL for write + document +
-  (optional) event store; Elasticsearch/OpenSearch for search.
+- **Data:** **EF Core + PostgreSQL** for relational aggregates and transactions;
+  [Marten](https://martendb.io/) for document models and optional event sourcing;
+  Elasticsearch/OpenSearch for search.
 - **Edge:** Minimal APIs (REST at the edge); gRPC for internal sync calls; async
   events by default.
 - **Cloud:** Azure-first, not Azure-only — provider-coupled resources sit behind
@@ -57,8 +58,12 @@ Building up the framework and a working reference service:
 - ✅ **Foundations:** `AGTec.ServiceDefaults` (OTel/health/resilience), `AGTec.Domain`
   (aggregate/entity/domain-event primitives), `AGTec.Application` (CQRS + Wolverine
   pipeline), `AGTec.Messaging`, Central Package Management + analyzers.
+- ✅ **Relational persistence:** `AGTec.Persistence.EntityFrameworkCore` packages EF Core +
+  Npgsql PostgreSQL registration conventions with connection-string validation. The
+  reference service uses EF Core for its relational forecast aggregate and Wolverine's
+  PostgreSQL transactional outbox; Marten remains the document projection store.
 - ✅ **Reference service** (`samples/AGTec.Reference`): layered CQRS on **Wolverine +
-  Marten/PostgreSQL** with the **transactional outbox**, a read-model **Worker**
+  EF Core/PostgreSQL** with the **transactional outbox**, a read-model **Worker**
   projector feeding a Marten document model and an **Elasticsearch** search index,
   Minimal APIs, and an **Aspire** AppHost. The outbox is proven end to end by a
   Testcontainers integration test.
@@ -120,6 +125,7 @@ separate and selected by configuration — no recompile to switch.
 | [`AGTec.Domain`](src/AGTec.Domain/README.md) | Domain primitives: `Entity`, `AggregateRoot`, domain events. Zero dependencies. |
 | [`AGTec.Application`](src/AGTec.Application/README.md) | CQRS messaging contracts and application-layer conventions. |
 | [`AGTec.Messaging`](src/AGTec.Messaging/README.md) | Wolverine-based mediator + transactional outbox + transports (RabbitMQ / Azure Service Bus). |
+| [`AGTec.Persistence.EntityFrameworkCore`](src/AGTec.Persistence.EntityFrameworkCore/README.md) | EF Core + Npgsql PostgreSQL conventions for relational aggregates and transactional data. |
 | [`AGTec.ServiceDefaults`](src/AGTec.ServiceDefaults/README.md) | OpenTelemetry, health checks, service discovery, HTTP resilience for every host. |
 | [`AGTec.Api`](src/AGTec.Api/README.md) | API edge: native OpenAPI (JWT bearer scheme), Scalar UI, Problem Details. |
 | [`AGTec.Security`](src/AGTec.Security/README.md) | OIDC/JWT bearer authentication + OAuth scope authorization. |

@@ -1,8 +1,9 @@
 # AGTec.Reference — reference service
 
 A working service that exercises the AGTecFramework stack end to end: CQRS on
-**Wolverine** (mediator + pipeline + transactional outbox), **Marten/PostgreSQL**
-for the write model and document read model, **RabbitMQ** between services, Minimal
+**Wolverine** (mediator + pipeline + transactional outbox), **EF Core/PostgreSQL**
+for the relational write model, and **Marten/PostgreSQL** for the document read model,
+**RabbitMQ** between services, Minimal
 APIs at the edge, and `AGTec.ServiceDefaults` for telemetry and health.
 
 ## Layout (Clean / Onion)
@@ -12,7 +13,7 @@ AGTec.Reference.Domain          # Forecast aggregate, Temperature value object, 
       ▲
 AGTec.Reference.Application      # Commands/queries, handlers, validators, ports, integration event
       ▲
-AGTec.Reference.Infrastructure   # Marten adapters + the shared Wolverine/Marten platform wiring
+AGTec.Reference.Infrastructure   # EF Core aggregate adapters + Marten document projection + shared wiring
       ▲
 AGTec.Reference.Api              # Minimal API host (write/read via the bus)
 AGTec.Reference.Worker           # Read-model projector (consumes the integration event)
@@ -33,8 +34,8 @@ AGTec.Reference.AppHost          # .NET Aspire local orchestration (Postgres + R
 
 1. `POST /forecasts` → the endpoint sends `RegisterForecast` on the Wolverine bus.
 2. `RegisterForecastHandler` creates the `Forecast` aggregate, stages the write via
-   Marten, and **returns** `ForecastRegisteredIntegrationEvent`.
-3. Wolverine's Marten-backed **transactional outbox** commits the write *and* the
+   EF Core, and **returns** `ForecastRegisteredIntegrationEvent`.
+3. Wolverine's PostgreSQL-backed **transactional outbox** commits the relational write *and* the
    event in one transaction — no dual write, no lost event.
 4. The event is delivered (at-least-once) to the **Worker**, whose
    `ForecastProjectionHandler` upserts a `ForecastSummary` read model (idempotent).

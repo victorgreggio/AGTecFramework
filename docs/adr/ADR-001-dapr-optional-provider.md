@@ -19,7 +19,7 @@ delivers at the **library** layer (§8 of the design):
 |---|---|
 | Pub/sub | Wolverine transports, config-selected (Local / RabbitMQ / Azure Service Bus) |
 | Secrets | `ISecretStore` + Key Vault / Configuration adapters |
-| State management | Marten / EF Core; `IObjectStore` |
+| State management | EF Core/PostgreSQL for relational data; Marten for document/event-sourced models; `IObjectStore` |
 | Service invocation (mTLS, retry, discovery) | gRPC + service discovery + Polly resilience |
 | Bindings / locks / **actors** / **workflows** | — (genuinely new capabilities) |
 
@@ -30,8 +30,8 @@ layers: ours is a **library** abstraction (in-process, typed, testable); Dapr is
 ## Decision
 
 **Adopt Dapr as an *optional provider behind the existing AGTec ports*, defaulted
-off. Do not make it a baseline dependency, and do not replace Wolverine + Marten
-messaging/outbox with Dapr pub/sub.**
+off. Do not make it a baseline dependency, and do not replace Wolverine's
+EF Core/PostgreSQL transactional outbox with Dapr pub/sub.**
 
 Because cloud-coupled resources already sit behind ports (`ISecretStore`,
 `IObjectStore`, config-selected messaging), Dapr becomes *just another adapter
@@ -73,7 +73,7 @@ is operational (a sidecar per pod + the Dapr control plane on AKS), not code.
   on AKS; an extra localhost hop.
 - Lowest-common-denominator APIs (CloudEvents envelope, generic state) vs typed
   Wolverine messages.
-- **Dapr pub/sub does not match the Wolverine + Marten transactional outbox** we
+- **Dapr pub/sub does not match the Wolverine + EF Core/PostgreSQL transactional outbox** we
   rely on, so messaging stays on Wolverine; Dapr pub/sub is not adopted.
 
 ## When to adopt Dapr (beyond the optional secret/state providers)
@@ -88,7 +88,7 @@ Adopt a block if **any** of these is true, otherwise prefer the direct adapters:
 ## Alternatives considered
 
 - **Dapr-first** (sidecar for messaging/state/secrets/invocation): rejected for now —
-  gives up the Wolverine+Marten outbox tightness and adds control-plane ops before a
+  gives up the Wolverine EF Core/PostgreSQL outbox tightness and adds control-plane ops before a
   concrete polyglot requirement justifies it.
 - **No Dapr**: viable; the direct adapters already satisfy the .NET-only case. This
   ADR keeps that as the default while leaving the door open at near-zero cost.

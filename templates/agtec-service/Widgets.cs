@@ -6,6 +6,8 @@ namespace AGTecService;
 /// <summary>
 /// A starter vertical slice. Replace with your domain: a AGTec.Domain aggregate, a
 /// AGTec.Application command/query + Wolverine handlers, and a persistence adapter.
+/// Use EF Core/PostgreSQL for relational aggregates; choose Marten only for
+/// document-shaped or event-sourced models.
 /// </summary>
 public sealed record Widget(Guid Id, string Name);
 
