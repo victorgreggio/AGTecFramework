@@ -3,6 +3,7 @@ using AGTec.Reference.Infrastructure;
 using AGTec.Reference.Worker;
 using AwesomeAssertions;
 using Marten;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,6 +42,12 @@ public sealed class RabbitMqTransportTests : IAsyncLifetime
         );
 
         _host = builder.Build();
+        await using (var scope = _host.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ForecastDbContext>();
+            await db.Database.MigrateAsync();
+        }
+
         await _host.StartAsync();
     }
 

@@ -43,6 +43,12 @@ public sealed class OutboxProjectionTests : IAsyncLifetime
         );
 
         _host = builder.Build();
+        await using (var scope = _host.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ForecastDbContext>();
+            await db.Database.MigrateAsync();
+        }
+
         await _host.StartAsync();
     }
 
