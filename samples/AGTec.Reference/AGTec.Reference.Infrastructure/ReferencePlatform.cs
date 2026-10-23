@@ -50,8 +50,8 @@ public static class ReferencePlatform
             connectionString
         );
 
-        builder.Services
-            .AddMartenStore<IReferenceDocumentStore>(options =>
+        builder
+            .Services.AddMartenStore<IReferenceDocumentStore>(options =>
             {
                 options.Connection(connectionString);
                 options.DatabaseSchemaName = "forecasts";
