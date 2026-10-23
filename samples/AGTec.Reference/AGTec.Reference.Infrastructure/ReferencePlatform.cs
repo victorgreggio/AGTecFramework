@@ -77,8 +77,9 @@ public static class ReferencePlatform
             options.UseEntityFrameworkCoreWolverineManagedMigrations();
             options.PersistMessagesWithPostgresql(connectionString, "wolverine").Enroll<ForecastDbContext>();
 
-            // Handlers live in the Application assembly, not the entry host.
+            // Read handlers live in Application; write handlers that need EF transactions live in Infrastructure.
             options.Discovery.IncludeAssembly(typeof(RegisterForecast).Assembly);
+            options.Discovery.IncludeAssembly(typeof(ForecastDbContext).Assembly);
 
             // Transport chosen by configuration (Local / RabbitMq / AzureServiceBus).
             ForecastMessaging.Configure(options, builder.Configuration, roles);
