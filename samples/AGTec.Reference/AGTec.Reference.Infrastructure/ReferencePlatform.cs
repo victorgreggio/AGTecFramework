@@ -74,6 +74,7 @@ public static class ReferencePlatform
 
             // Commit the EF Core aggregate and the PostgreSQL outbox in one transaction.
             options.UseEntityFrameworkCoreTransactions();
+            options.Policies.AutoApplyTransactions();
             options.UseEntityFrameworkCoreWolverineManagedMigrations();
             options.PersistMessagesWithPostgresql(connectionString, "wolverine").Enroll<ForecastDbContext>();
 
