@@ -8,6 +8,7 @@ using AGTec.Platform.Dapr;
 using AGTec.Reference.Application;
 using Elastic.Clients.Elasticsearch;
 using FluentValidation;
+using JasperFx.CodeGeneration.Model;
 using Marten;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -69,6 +70,7 @@ public static class ReferencePlatform
         builder.UseWolverine(options =>
         {
             options.ApplyAGTecDefaults();
+            options.ServiceLocationPolicy = ServiceLocationPolicy.AllowedButWarn;
 
             // Commit the EF Core aggregate and the PostgreSQL outbox in one transaction.
             options.UseEntityFrameworkCoreTransactions();
