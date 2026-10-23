@@ -21,6 +21,8 @@ using Wolverine.Postgresql;
 
 namespace AGTec.Reference.Infrastructure;
 
+public interface IReferenceDocumentStore : IDocumentStore;
+
 /// <summary>
 /// Shared persistence + messaging wiring for the reference service. One method configures
 /// EF Core/PostgreSQL (relational write model) and Wolverine (mediator + pipeline +
@@ -48,11 +50,16 @@ public static class ReferencePlatform
             connectionString
         );
 
-        builder.Services.AddMarten(options =>
-        {
-            options.Connection(connectionString);
-            options.DatabaseSchemaName = "forecasts";
-        });
+        builder.Services
+            .AddMartenStore<IReferenceDocumentStore>(options =>
+            {
+                options.Connection(connectionString);
+                options.DatabaseSchemaName = "forecasts";
+            })
+            .IntegrateWithWolverine();
+        builder.Services.AddSingleton<IDocumentStore>(services =>
+            services.GetRequiredService<IReferenceDocumentStore>()
+        );
 
         // Ports → EF Core relational adapters.
         builder.Services.AddScoped<IForecastRepository, EfCoreForecastRepository>();

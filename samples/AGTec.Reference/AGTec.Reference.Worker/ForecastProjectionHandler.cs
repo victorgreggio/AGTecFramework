@@ -2,6 +2,7 @@ using AGTec.Reference.Application;
 using AGTec.Reference.Domain;
 using AGTec.Reference.Infrastructure;
 using Marten;
+using Wolverine.Marten;
 
 namespace AGTec.Reference.Worker;
 
@@ -11,6 +12,7 @@ namespace AGTec.Reference.Worker;
 /// document for lookups and a search index entry. It owns its own data and never calls
 /// back into the producer's database.
 /// </summary>
+[MartenStore(typeof(IReferenceDocumentStore))]
 public static class ForecastProjectionHandler
 {
     public static async Task Handle(
