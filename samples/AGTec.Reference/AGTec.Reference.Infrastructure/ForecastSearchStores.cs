@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using System.Globalization;
+using AGTec.Reference.Application;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
-using AGTec.Reference.Application;
 
 namespace AGTec.Reference.Infrastructure;
 

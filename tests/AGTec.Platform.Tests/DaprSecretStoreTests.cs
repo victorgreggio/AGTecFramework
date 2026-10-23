@@ -1,10 +1,10 @@
 using System.Text;
+using AGTec.Platform;
+using AGTec.Platform.Dapr;
 using AwesomeAssertions;
 using Dapr.Client;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
-using AGTec.Platform;
-using AGTec.Platform.Dapr;
 
 namespace AGTec.Platform.Tests;
 

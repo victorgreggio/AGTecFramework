@@ -1,5 +1,5 @@
-using Grpc.Core;
 using AGTec.Reference.Grpc.Contracts;
+using Grpc.Core;
 
 namespace AGTec.Reference.Advisory;
 

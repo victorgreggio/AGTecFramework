@@ -1,6 +1,6 @@
+using AGTec.Platform;
 using Dapr.Client;
 using Microsoft.Extensions.DependencyInjection;
-using AGTec.Platform;
 
 namespace AGTec.Platform.Dapr;
 

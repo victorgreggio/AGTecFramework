@@ -1,6 +1,6 @@
+using AGTec.Platform;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
-using AGTec.Platform;
 
 namespace AGTec.Platform.Azure;
 

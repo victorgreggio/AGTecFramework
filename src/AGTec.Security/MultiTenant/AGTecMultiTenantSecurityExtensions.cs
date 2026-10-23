@@ -22,7 +22,8 @@ public static class AGTecMultiTenantSecurityExtensions
     /// </summary>
     public static IHostApplicationBuilder AddAGTecMultiTenantJwtBearer(
         this IHostApplicationBuilder builder,
-        Action<AGTecMultiTenantAuthOptions>? configure = null)
+        Action<AGTecMultiTenantAuthOptions>? configure = null
+    )
     {
         var options = new AGTecMultiTenantAuthOptions();
         configure?.Invoke(options);
@@ -33,7 +34,10 @@ public static class AGTecMultiTenantSecurityExtensions
 
         builder
             .Services.AddAuthentication(options.SchemeName)
-            .AddScheme<AuthenticationSchemeOptions, MultiTenantJwtBearerHandler>(options.SchemeName, configureOptions: null);
+            .AddScheme<AuthenticationSchemeOptions, MultiTenantJwtBearerHandler>(
+                options.SchemeName,
+                configureOptions: null
+            );
 
         builder.Services.AddAuthorization();
         builder.Services.AddSingleton<IAuthorizationHandler, ScopeAuthorizationHandler>();

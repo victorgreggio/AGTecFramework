@@ -1,6 +1,6 @@
+using AGTec.Platform;
 using Microsoft.Extensions.DependencyInjection;
 using nClam;
-using AGTec.Platform;
 
 namespace AGTec.Platform.ClamAv;
 

@@ -1,9 +1,9 @@
 using System.Text;
+using AGTec.Content.Local;
 using AwesomeAssertions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using AGTec.Content.Local;
 
 namespace AGTec.Content.Tests;
 

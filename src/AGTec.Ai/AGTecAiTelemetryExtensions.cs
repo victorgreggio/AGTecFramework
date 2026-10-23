@@ -29,12 +29,14 @@ public static class AGTecAiTelemetryExtensions
     public static IChatClient WithTelemetry(
         this IChatClient client,
         AGTecAiTelemetryOptions options,
-        string? sourceName = null) =>
+        string? sourceName = null
+    ) =>
         client
             .AsBuilder()
             .UseOpenTelemetry(
                 sourceName: sourceName ?? AGTecAiTelemetry.SourceName,
-                configure: c => c.EnableSensitiveData = options.CaptureContent)
+                configure: c => c.EnableSensitiveData = options.CaptureContent
+            )
             .Build();
 
     /// <summary>
@@ -56,11 +58,14 @@ public static class AGTecAiTelemetryExtensions
                     var inner = (IChatClient)(
                         descriptor.ImplementationInstance
                         ?? descriptor.ImplementationFactory?.Invoke(provider)
-                        ?? ActivatorUtilities.CreateInstance(provider, descriptor.ImplementationType!));
+                        ?? ActivatorUtilities.CreateInstance(provider, descriptor.ImplementationType!)
+                    );
                     var options = provider.GetService<AGTecAiTelemetryOptions>() ?? new AGTecAiTelemetryOptions();
                     return inner.WithTelemetry(options, sourceName);
                 },
-                descriptor.Lifetime));
+                descriptor.Lifetime
+            )
+        );
 
         return services;
     }

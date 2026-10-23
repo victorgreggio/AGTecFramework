@@ -1,6 +1,6 @@
+using AGTec.Ai;
 using AwesomeAssertions;
 using Microsoft.Extensions.AI;
-using AGTec.Ai;
 
 namespace AGTec.Ai.Tests;
 

@@ -1,6 +1,6 @@
-using AwesomeAssertions;
 using AGTec.VectorData;
 using AGTec.VectorData.PgVector;
+using AwesomeAssertions;
 using Npgsql;
 using Testcontainers.PostgreSql;
 

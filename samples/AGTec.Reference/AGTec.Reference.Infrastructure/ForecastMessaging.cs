@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Configuration;
 using AGTec.Reference.Application;
+using Microsoft.Extensions.Configuration;
 using Wolverine;
 using Wolverine.AzureServiceBus;
 using Wolverine.RabbitMQ;

@@ -1,5 +1,5 @@
-using AwesomeAssertions;
 using AGTec.Reference.Domain;
+using AwesomeAssertions;
 
 namespace AGTec.Reference.UnitTests;
 

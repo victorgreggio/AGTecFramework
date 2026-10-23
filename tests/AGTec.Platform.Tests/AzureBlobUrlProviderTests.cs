@@ -1,9 +1,9 @@
 using System.Globalization;
 using System.Linq;
-using AwesomeAssertions;
-using Azure.Storage.Blobs;
 using AGTec.Platform;
 using AGTec.Platform.Azure;
+using AwesomeAssertions;
+using Azure.Storage.Blobs;
 using Testcontainers.Azurite;
 
 namespace AGTec.Platform.Tests;

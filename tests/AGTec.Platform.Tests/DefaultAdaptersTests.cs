@@ -1,7 +1,7 @@
 using System.Text;
+using AGTec.Platform;
 using AwesomeAssertions;
 using Microsoft.Extensions.Configuration;
-using AGTec.Platform;
 
 namespace AGTec.Platform.Tests;
 

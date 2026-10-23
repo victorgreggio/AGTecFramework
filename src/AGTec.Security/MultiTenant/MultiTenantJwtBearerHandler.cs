@@ -20,7 +20,8 @@ namespace AGTec.Security.MultiTenant;
 public sealed partial class MultiTenantJwtBearerHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
-    UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
+    UrlEncoder encoder
+) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     [LoggerMessage(Level = LogLevel.Error, Message = "Failed to load OIDC metadata for tenant {Tenant}")]
     private static partial void LogMetadataFailure(ILogger logger, string tenant, Exception exception);
@@ -53,7 +54,8 @@ public sealed partial class MultiTenantJwtBearerHandler(
             oidc = await cache.GetAsync(
                 registration.ResolveMetadataAddress(),
                 registration.RequireHttpsMetadata,
-                Context.RequestAborted);
+                Context.RequestAborted
+            );
         }
         catch (Exception ex)
         {
@@ -89,16 +91,20 @@ public sealed partial class MultiTenantJwtBearerHandler(
 
     private string? ResolveTenantId(AGTecMultiTenantAuthOptions opts)
     {
-        if (Request.RouteValues.TryGetValue(opts.RouteParameterName, out var value)
+        if (
+            Request.RouteValues.TryGetValue(opts.RouteParameterName, out var value)
             && value is string routeTenant
-            && !string.IsNullOrWhiteSpace(routeTenant))
+            && !string.IsNullOrWhiteSpace(routeTenant)
+        )
         {
             return routeTenant;
         }
 
         var segments = Request.Path.Value?.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (segments is { Length: >= 2 }
-            && string.Equals(segments[0], opts.RoutePrefix, StringComparison.OrdinalIgnoreCase))
+        if (
+            segments is { Length: >= 2 }
+            && string.Equals(segments[0], opts.RoutePrefix, StringComparison.OrdinalIgnoreCase)
+        )
         {
             return segments[1];
         }

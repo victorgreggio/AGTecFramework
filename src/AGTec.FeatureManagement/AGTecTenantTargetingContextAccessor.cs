@@ -1,7 +1,7 @@
+using AGTec.Tenancy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement.FeatureFilters;
-using AGTec.Tenancy;
 
 namespace AGTec.FeatureManagement;
 

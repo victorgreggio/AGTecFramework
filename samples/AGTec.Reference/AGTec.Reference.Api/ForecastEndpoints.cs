@@ -1,9 +1,9 @@
 using System.Text;
-using Microsoft.Extensions.DependencyInjection;
 using AGTec.Platform;
 using AGTec.Reference.Application;
 using AGTec.Reference.Grpc.Contracts;
 using AGTec.Security;
+using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
 
 namespace AGTec.Reference.Api;

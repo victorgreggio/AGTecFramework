@@ -1,5 +1,5 @@
-using Dapr.Client;
 using AGTec.Platform;
+using Dapr.Client;
 
 namespace AGTec.Platform.Dapr;
 

@@ -1,7 +1,7 @@
+using AGTec.Tenancy;
 using AwesomeAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using AGTec.Tenancy;
 
 namespace AGTec.FeatureManagement.Tests;
 

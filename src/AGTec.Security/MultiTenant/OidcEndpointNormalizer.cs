@@ -14,10 +14,12 @@ public static class OidcEndpointNormalizer
     /// </summary>
     public static string? WithFrontendOrigin(string? endpoint, string authority)
     {
-        if (string.IsNullOrWhiteSpace(endpoint)
+        if (
+            string.IsNullOrWhiteSpace(endpoint)
             || string.IsNullOrWhiteSpace(authority)
             || !Uri.TryCreate(endpoint, UriKind.Absolute, out var url)
-            || !Uri.TryCreate(authority, UriKind.Absolute, out var origin))
+            || !Uri.TryCreate(authority, UriKind.Absolute, out var origin)
+        )
         {
             return endpoint;
         }

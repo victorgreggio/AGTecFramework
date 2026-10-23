@@ -1,5 +1,5 @@
-using AwesomeAssertions;
 using AGTec.VectorData;
+using AwesomeAssertions;
 
 namespace AGTec.VectorData.Tests;
 

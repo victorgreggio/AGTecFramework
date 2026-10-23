@@ -1,8 +1,8 @@
+using AGTec.Platform;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.DependencyInjection;
-using AGTec.Platform;
 
 namespace AGTec.Platform.Azure;
 

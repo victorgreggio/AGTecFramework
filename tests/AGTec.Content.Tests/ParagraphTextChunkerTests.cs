@@ -1,5 +1,5 @@
-using AwesomeAssertions;
 using AGTec.Content;
+using AwesomeAssertions;
 
 namespace AGTec.Content.Tests;
 

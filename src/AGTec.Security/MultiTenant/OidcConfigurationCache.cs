@@ -11,19 +11,23 @@ public sealed class OidcConfigurationCache
 {
     private readonly System.Collections.Concurrent.ConcurrentDictionary<
         string,
-        ConfigurationManager<OpenIdConnectConfiguration>> _managers = new();
+        ConfigurationManager<OpenIdConnectConfiguration>
+    > _managers = new();
 
     public async Task<OpenIdConnectConfiguration> GetAsync(
         string metadataAddress,
         bool requireHttps,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
         var manager = _managers.GetOrAdd(
             metadataAddress,
             address => new ConfigurationManager<OpenIdConnectConfiguration>(
                 address,
                 new OpenIdConnectConfigurationRetriever(),
-                new HttpDocumentRetriever { RequireHttps = requireHttps }));
+                new HttpDocumentRetriever { RequireHttps = requireHttps }
+            )
+        );
 
         return await manager.GetConfigurationAsync(ct);
     }

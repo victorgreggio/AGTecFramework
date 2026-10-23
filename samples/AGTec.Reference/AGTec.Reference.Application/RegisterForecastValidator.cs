@@ -1,5 +1,5 @@
-using FluentValidation;
 using AGTec.Reference.Domain;
+using FluentValidation;
 
 namespace AGTec.Reference.Application;
 

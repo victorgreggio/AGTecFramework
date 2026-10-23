@@ -73,9 +73,15 @@ public static class OpenTelemetryExtensions
             builder
                 .Services.AddOpenTelemetry()
                 .WithTracing(tracing =>
-                    tracing.AddAzureMonitorTraceExporter(options => options.ConnectionString = azureMonitorConnectionString))
+                    tracing.AddAzureMonitorTraceExporter(options =>
+                        options.ConnectionString = azureMonitorConnectionString
+                    )
+                )
                 .WithMetrics(metrics =>
-                    metrics.AddAzureMonitorMetricExporter(options => options.ConnectionString = azureMonitorConnectionString));
+                    metrics.AddAzureMonitorMetricExporter(options =>
+                        options.ConnectionString = azureMonitorConnectionString
+                    )
+                );
         }
     }
 }

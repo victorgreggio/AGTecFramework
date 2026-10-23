@@ -1,8 +1,8 @@
+using AGTec.Platform;
 using Azure;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using AGTec.Platform;
 
 namespace AGTec.Platform.Azure;
 

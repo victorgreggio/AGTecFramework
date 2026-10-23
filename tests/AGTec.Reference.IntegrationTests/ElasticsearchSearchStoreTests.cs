@@ -1,8 +1,8 @@
+using AGTec.Reference.Application;
+using AGTec.Reference.Infrastructure;
 using AwesomeAssertions;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
-using AGTec.Reference.Application;
-using AGTec.Reference.Infrastructure;
 using Testcontainers.Elasticsearch;
 
 namespace AGTec.Reference.IntegrationTests;

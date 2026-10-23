@@ -1,6 +1,6 @@
 using System.Text;
-using AwesomeAssertions;
 using AGTec.Platform;
+using AwesomeAssertions;
 
 namespace AGTec.Platform.Tests;
 

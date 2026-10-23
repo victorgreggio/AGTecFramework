@@ -1,5 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using AGTec.Content;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AGTec.Content.Local;
 

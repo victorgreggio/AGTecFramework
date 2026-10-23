@@ -2,11 +2,11 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using AGTec.Analyzers;
 using AwesomeAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using AGTec.Analyzers;
 
 namespace AGTec.Analyzers.Test;
 

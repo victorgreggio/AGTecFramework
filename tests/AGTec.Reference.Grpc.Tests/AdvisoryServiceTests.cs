@@ -1,7 +1,7 @@
+using AGTec.Reference.Grpc.Contracts;
 using AwesomeAssertions;
 using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc.Testing;
-using AGTec.Reference.Grpc.Contracts;
 
 namespace AGTec.Reference.Grpc.Tests;
 

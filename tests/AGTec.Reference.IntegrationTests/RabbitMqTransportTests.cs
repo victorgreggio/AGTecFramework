@@ -1,11 +1,11 @@
+using AGTec.Reference.Application;
+using AGTec.Reference.Infrastructure;
+using AGTec.Reference.Worker;
 using AwesomeAssertions;
 using Marten;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using AGTec.Reference.Application;
-using AGTec.Reference.Infrastructure;
-using AGTec.Reference.Worker;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
 using Wolverine;

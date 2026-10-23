@@ -1,7 +1,7 @@
-using Marten;
 using AGTec.Reference.Application;
 using AGTec.Reference.Domain;
 using AGTec.Reference.Infrastructure;
+using Marten;
 
 namespace AGTec.Reference.Worker;
 

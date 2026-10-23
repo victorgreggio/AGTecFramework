@@ -1,4 +1,5 @@
 using System.Text;
+using AGTec.Tenancy;
 using AwesomeAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement;
-using AGTec.Tenancy;
 
 namespace AGTec.FeatureManagement.Tests;
 
