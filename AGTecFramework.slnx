@@ -28,6 +28,7 @@
     <Project Path="src/AGTec.Platform.Dapr/AGTec.Platform.Dapr.csproj" />
     <Project Path="src/AGTec.Platform/AGTec.Platform.csproj" />
     <Project Path="src/AGTec.Persistence.EntityFrameworkCore/AGTec.Persistence.EntityFrameworkCore.csproj" />
+    <Project Path="src/AGTec.Rag/AGTec.Rag.csproj" />
     <Project Path="src/AGTec.Security/AGTec.Security.csproj" />
     <Project Path="src/AGTec.ServiceDefaults/AGTec.ServiceDefaults.csproj" />
     <Project Path="src/AGTec.Tenancy/AGTec.Tenancy.csproj" />

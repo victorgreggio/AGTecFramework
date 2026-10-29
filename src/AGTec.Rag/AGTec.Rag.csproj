@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Description>Provider-neutral RAG ingestion and attributed retrieval orchestration over AGTec content, AI, and vector ports.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AGTec.Content\AGTec.Content.csproj" />
+    <ProjectReference Include="..\AGTec.VectorData\AGTec.VectorData.csproj" />
+    <ProjectReference Include="..\AGTec.Ai\AGTec.Ai.csproj" />
+  </ItemGroup>
+</Project>
